@@ -8,8 +8,9 @@ import edu.wpi.first.wpilibj.livewindow.LiveWindow;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
-import org.usfirst.frc.team6644.robot.commands.ExampleCommand;
-import org.usfirst.frc.team6644.robot.subsystems.ExampleSubsystem;
+import org.usfirst.frc.team6644.robot.subsystems.DriveMotors;
+import org.usfirst.frc.team6644.robot.subsystems.PCM;
+import org.usfirst.frc.team6644.robot.subsystems.PDM;
 
 /**
  * The VM is configured to automatically run this class, and to call the
@@ -20,8 +21,12 @@ import org.usfirst.frc.team6644.robot.subsystems.ExampleSubsystem;
  */
 public class Robot extends IterativeRobot {
 
-	public static final ExampleSubsystem exampleSubsystem = new ExampleSubsystem();
 	public static OI oi;
+	
+	//essential subsystems
+	public static final DriveMotors drivemotors = new DriveMotors();
+	public static final PDM pdm=new PDM();
+	public static final PCM pcm=new PCM();
 
 	Command autonomousCommand;
 	SendableChooser<Command> chooser = new SendableChooser<>();
@@ -33,7 +38,15 @@ public class Robot extends IterativeRobot {
 	@Override
 	public void robotInit() {
 		oi = new OI();
-		chooser.addDefault("Default Auto", new ExampleCommand());
+		
+		//subsystem and power stuff
+		pdm.clearStickyFaults();
+		pcm.clearAllPCMStickyFaults();
+		pdm.printPDMStats();
+		pcm.printCompressorStats();
+		pcm.startCompressor();
+		pcm.printCompressorStats();
+		
 		// chooser.addObject("My Auto", new MyAutoCommand());
 		SmartDashboard.putData("Auto mode", chooser);
 	}
