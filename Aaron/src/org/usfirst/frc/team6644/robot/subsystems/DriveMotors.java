@@ -1,51 +1,32 @@
 package org.usfirst.frc.team6644.robot.subsystems;
 
 import edu.wpi.first.wpilibj.command.Subsystem;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import edu.wpi.first.wpilibj.ADXRS450_Gyro;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.Joystick;
-import edu.wpi.first.wpilibj.RobotDrive;
 import edu.wpi.first.wpilibj.Spark;
-//import edu.wpi.first.wpilibj.SpeedControllerGroup;
-import edu.wpi.first.wpilibj.XboxController;
-import edu.wpi.first.wpilibj.GenericHID.Hand;
-import edu.wpi.first.wpilibj.GenericHID.RumbleType;
+import edu.wpi.first.wpilibj.SpeedControllerGroup;
+import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 
-import org.usfirst.frc.team6644.robot.Robot;
 import org.usfirst.frc.team6644.robot.RobotPorts;
 
 public class DriveMotors extends Subsystem {
-	//private static SpeedControllerGroup leftDriveLonePWM;
-	private static Spark leftDriveSplitPWM;
-	//private static SpeedControllerGroup rightDriveLonePWM;
-	private static Spark rightDriveSplitPWM;
-	private static RobotDrive drive;
-	private double motorSafteyExpireTime = 0.3;// sets the PWM to expire in 0.3 seconds after the last call of .Feed()
+	private static DifferentialDrive drive;
+	private final double motorSafteyExpireTime = 0.3;// sets the PWM to expire in 0.3 seconds after the last call of .Feed()
 	private boolean disableMotors;
-	/*
-	 * 
-	 * class variables for driving
-	 */
-	private boolean isRunning = false;
-	// joystick stuff
-	private Joystick joystick = new Joystick(RobotPorts.JOYSTICK.get());
+	private final Joystick joystick = new Joystick(RobotPorts.JOYSTICK.get());
 	private double left = 0;
 	private double right = 0;
 
 	public DriveMotors() {
-		//leftDriveGroup = new Spark(RobotPorts.LEFT_DRIVE_PWM_LONE.get());
-		leftDriveSplitPWM=new Spark(RobotPorts.LEFT_DRIVE_PWM_SPLIT.get());
-		//rightDriveLonePWM = new Spark(RobotPorts.RIGHT_DRIVE_PWM_LONE.get());
-		rightDriveSplitPWM=new Spark(RobotPorts.RIGHT_DRIVE_PWM_SPLIT.get());
-
-		//drive = new RobotDrive(leftDrivePWM, rightDrivePWM);
-		disableMotors=false;
-
+		SpeedControllerGroup leftDriveGroup = new SpeedControllerGroup(new Spark(RobotPorts.LEFT_DRIVE_PWM_LONE.get()),
+				new Spark(RobotPorts.LEFT_DRIVE_PWM_SPLIT.get()));
+		SpeedControllerGroup rightDriveGroup = new SpeedControllerGroup(
+				new Spark(RobotPorts.RIGHT_DRIVE_PWM_LONE.get()), new Spark(RobotPorts.RIGHT_DRIVE_PWM_SPLIT.get()));
+		drive = new DifferentialDrive(leftDriveGroup, rightDriveGroup);
+		disableMotors = false;
 	}
 
 	/*
-	 * 
 	 * methods for drive motors
 	 */
 	public void enableSaftey() {
@@ -63,7 +44,7 @@ public class DriveMotors extends Subsystem {
 	}
 
 	public void arcadeDrive(GenericHID stick) {
-		drive.arcadeDrive(stick);
+		drive.arcadeDrive(stick.getX(), stick.getY());
 	}
 
 	public void tankDrive(double left, double right) {
@@ -110,26 +91,20 @@ public class DriveMotors extends Subsystem {
 	public void stop() {
 		disableSafety();
 		drive.tankDrive(0, 0);
-		Robot.drivemotors.setIsRunning(false);
 	}
 
 	public void startAutoMode() {
 		disableSafety();
-		setIsRunning(true);
 	}
 
 	public void startTeleopMode() {
 		enableSaftey();
-		setIsRunning(true);
 	}
 
 	/*
 	 * 
 	 * methods for driving in Teleop
 	 */
-	public void setIsRunning(boolean isRunning) {
-		this.isRunning = isRunning;
-	}
 
 	public void driveWithJoystick() {
 		double forwardModifier = 1 - Math.abs(joystick.getY());
@@ -145,9 +120,11 @@ public class DriveMotors extends Subsystem {
 	public void toggleMotorDisableState() {
 		disableMotors = !disableMotors;
 	}
+
 	public void disableMotors() {
 		disableMotors = true;
 	}
+
 	public void enableMotors() {
 		disableMotors = false;
 	}
@@ -155,10 +132,6 @@ public class DriveMotors extends Subsystem {
 	/*
 	 * stuff for SmartDashboard
 	 */
-	public boolean isRunning() {
-		return isRunning;
-	}
-
 	public double[] getDriveOutputs() {
 		// returns an array [left,right]
 		double[] driveOutputs = new double[2];
@@ -166,6 +139,7 @@ public class DriveMotors extends Subsystem {
 		driveOutputs[1] = right;
 		return driveOutputs;
 	}
+
 	public void initDefaultCommand() {
 		// Set the default command for a subsystem here.
 		// setDefaultCommand(new MySpecialCommand());

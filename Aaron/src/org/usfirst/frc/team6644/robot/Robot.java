@@ -4,13 +4,15 @@ package org.usfirst.frc.team6644.robot;
 import edu.wpi.first.wpilibj.IterativeRobot;
 import edu.wpi.first.wpilibj.command.Command;
 import edu.wpi.first.wpilibj.command.Scheduler;
-import edu.wpi.first.wpilibj.livewindow.LiveWindow;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 import org.usfirst.frc.team6644.robot.subsystems.DriveMotors;
 import org.usfirst.frc.team6644.robot.subsystems.PCM;
 import org.usfirst.frc.team6644.robot.subsystems.PDM;
+
+import org.usfirst.frc.team6644.robot.commands.RunGearboxUntilEmergencyStop;
+import org.usfirst.frc.team6644.robot.commands.DriveWithJoystick;
 
 /**
  * The VM is configured to automatically run this class, and to call the
@@ -79,18 +81,7 @@ public class Robot extends IterativeRobot {
 	 */
 	@Override
 	public void autonomousInit() {
-		autonomousCommand = chooser.getSelected();
-
-		/*
-		 * String autoSelected = SmartDashboard.getString("Auto Selector",
-		 * "Default"); switch(autoSelected) { case "My Auto": autonomousCommand
-		 * = new MyAutoCommand(); break; case "Default Auto": default:
-		 * autonomousCommand = new ExampleCommand(); break; }
-		 */
-
-		// schedule the autonomous command (example)
-		if (autonomousCommand != null)
-			autonomousCommand.start();
+		Scheduler.getInstance().add(new RunGearboxUntilEmergencyStop());
 	}
 
 	/**
@@ -99,16 +90,12 @@ public class Robot extends IterativeRobot {
 	@Override
 	public void autonomousPeriodic() {
 		Scheduler.getInstance().run();
+		
 	}
 
 	@Override
 	public void teleopInit() {
-		// This makes sure that the autonomous stops running when
-		// teleop starts running. If you want the autonomous to
-		// continue until interrupted by another command, remove
-		// this line or comment it out.
-		if (autonomousCommand != null)
-			autonomousCommand.cancel();
+		Scheduler.getInstance().add(new DriveWithJoystick());
 	}
 
 	/**
@@ -124,6 +111,6 @@ public class Robot extends IterativeRobot {
 	 */
 	@Override
 	public void testPeriodic() {
-		LiveWindow.run();
+
 	}
 }
