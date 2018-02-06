@@ -2,18 +2,17 @@ package org.usfirst.frc.team6644.robot.subsystems;
 
 import edu.wpi.first.wpilibj.command.Subsystem;
 import edu.wpi.first.wpilibj.GenericHID;
-import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.Spark;
 import edu.wpi.first.wpilibj.SpeedControllerGroup;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 
+import org.usfirst.frc.team6644.robot.Robot;
 import org.usfirst.frc.team6644.robot.RobotPorts;
 
 public class DriveMotors extends Subsystem {
 	private static DifferentialDrive drive;
 	private final double motorSafteyExpireTime = 0.3;// sets the PWM to expire in 0.3 seconds after the last call of .Feed()
 	private boolean disableMotors;
-	private final Joystick joystick = new Joystick(RobotPorts.JOYSTICK.get());
 	private double left = 0;
 	private double right = 0;
 
@@ -107,13 +106,13 @@ public class DriveMotors extends Subsystem {
 	 */
 
 	public void driveWithJoystick() {
-		double forwardModifier = 1 - Math.abs(joystick.getY());
-		double sensitivity = (-joystick.getRawAxis(3) + 1) / 2;
+		double forwardModifier = 1 - Math.abs(Robot.joystick.getY());
+		double sensitivity = (-Robot.joystick.getRawAxis(3) + 1) / 2;
 		if (disableMotors) {
 			sensitivity = 0;
 		}
-		left = (forwardModifier * joystick.getX() - joystick.getY()) * sensitivity;
-		right = (-forwardModifier * joystick.getX() - joystick.getY()) * sensitivity;
+		left = (forwardModifier * Robot.joystick.getX() - Robot.joystick.getY()) * sensitivity;
+		right = (-forwardModifier * Robot.joystick.getX() - Robot.joystick.getY()) * sensitivity;
 		tankDrive(left, right);
 	}
 

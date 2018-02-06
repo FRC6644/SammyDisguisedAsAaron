@@ -5,7 +5,8 @@ import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 
 /**
- * For controlling pneumatics
+ * For controlling the pneumatics control module.
+ * Currently configured to use a single double solenoid.
  */
 public class PCM extends Subsystem {
 
@@ -14,14 +15,6 @@ public class PCM extends Subsystem {
 
 	public void clearAllPCMStickyFaults() {
 		sol.clearAllPCMStickyFaults();
-	}
-
-	public boolean compressorEnabled() {
-		return compressor.enabled();
-	}
-
-	public void startCompressor() {
-		compressor.start();
 	}
 
 	public void printCompressorStats() {
@@ -39,6 +32,37 @@ public class PCM extends Subsystem {
 		System.out.println("\t\t\t\tShortedFault: " + compressor.getCompressorShortedFault());
 		System.out.println("\t\t\t\tShortedStickyFault: " + compressor.getCompressorShortedStickyFault());
 		System.out.println("--------------------------------------");
+	}
+	
+	/*
+	 * Compressor stuff below
+	 */
+	
+	public boolean compressorEnabled() {
+		return compressor.enabled();
+	}
+
+	public void startCompressor() {
+		compressor.start();
+	}
+	
+	/*
+	 * Double solenoid stuff below
+	 */
+	public String getSolenoidValue() {
+		return sol.get().toString();
+	}
+	
+	public void setSolenoidForward() {
+		sol.set(DoubleSolenoid.Value.valueOf("kForward"));
+	}
+	
+	public void setSolenoidOff() {
+		sol.set(DoubleSolenoid.Value.valueOf("kOff"));
+	}
+	
+	public void setSolenoidReverse() {
+		sol.set(DoubleSolenoid.Value.valueOf("kReverse"));
 	}
 
 	public void initDefaultCommand() {
