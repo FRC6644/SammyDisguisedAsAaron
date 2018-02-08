@@ -43,7 +43,7 @@ public class DriveMotors extends Subsystem {
 	}
 
 	public void arcadeDrive(GenericHID stick) {
-		drive.arcadeDrive(stick.getX(), stick.getY());
+		drive.arcadeDrive(stick.getY(), stick.getX());
 	}
 
 	public void tankDrive(double left, double right) {

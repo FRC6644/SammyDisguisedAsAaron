@@ -13,6 +13,7 @@ import org.usfirst.frc.team6644.robot.subsystems.PCM;
 import org.usfirst.frc.team6644.robot.subsystems.PDM;
 
 import org.usfirst.frc.team6644.robot.commands.RunGearboxUntilEmergencyStop;
+import org.usfirst.frc.team6644.robot.commands.TankDriveTest;
 import org.usfirst.frc.team6644.robot.commands.DriveWithJoystick;
 
 /**
@@ -31,9 +32,10 @@ public class Robot extends IterativeRobot {
 
 	// essential subsystems
 	public static final DriveMotors drivemotors = new DriveMotors();
-	public static final PDM pdm = new PDM();
+	
+	//public static final PDM pdm = new PDM(); TODO: Instantiating this thing throws a bunch of CAN Timeout errors. Figure out why.
 	public static final PCM pcm = new PCM();
-
+	
 	Command autonomousCommand;
 	SendableChooser<Command> chooser = new SendableChooser<>();
 
@@ -46,13 +48,17 @@ public class Robot extends IterativeRobot {
 		oi = new OI();
 
 		// subsystem and power stuff
-		pdm.clearStickyFaults();
-		pcm.clearAllPCMStickyFaults();
-		pdm.printPDMStats();
+		
+		//pdm.clearStickyFaults();
+		//pcm.printCompressorStats();
+		pcm.clearAllPCMStickyFaultsThroughCompressor();
+		
+		
+		//pdm.printPDMStats();
 		pcm.printCompressorStats();
-		pcm.startCompressor();
-		pcm.printCompressorStats();
-
+		//pcm.startCompressor();
+		//pcm.printCompressorStats();
+		
 		// chooser.addObject("My Auto", new MyAutoCommand());
 		SmartDashboard.putData("Auto mode", chooser);
 	}
@@ -85,7 +91,7 @@ public class Robot extends IterativeRobot {
 	 */
 	@Override
 	public void autonomousInit() {
-		Scheduler.getInstance().add(new RunGearboxUntilEmergencyStop());
+		//Scheduler.getInstance().add(new TankDriveTest());
 	}
 
 	/**
