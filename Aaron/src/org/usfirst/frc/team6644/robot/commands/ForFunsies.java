@@ -1,35 +1,40 @@
 package org.usfirst.frc.team6644.robot.commands;
 
-import edu.wpi.first.wpilibj.command.Command;
 import org.usfirst.frc.team6644.robot.Robot;
+
+import edu.wpi.first.wpilibj.command.Command;
 
 /**
  *
  */
-public class RunGearboxUntilEmergencyStop extends Command {
-
-    public RunGearboxUntilEmergencyStop() {
-        requires(Robot.drivemotors);
+public class ForFunsies extends Command {
+	OperateSolenoid s;
+    public ForFunsies() {
+        requires(Robot.pcm);
     }
 
     // Called just before this Command runs the first time
     protected void initialize() {
-    	Robot.drivemotors.disableSafety();
     }
 
     // Called repeatedly when this Command is scheduled to run
     protected void execute() {
-    	Robot.drivemotors.arcadeDrive(0.55,0);
+    	if(Robot.joystick.getX()<0) {
+    		s=new OperateSolenoid(0);
+    		s.execute();
+    	}else {
+    		s=new OperateSolenoid(2);
+    		s.execute();
+    	}
     }
 
     // Make this return true when this Command no longer needs to run execute()
     protected boolean isFinished() {
-        return false;
+        return true;
     }
 
     // Called once after isFinished returns true
     protected void end() {
-    	Robot.drivemotors.stop();
     }
 
     // Called when another command which requires one or more of the same

@@ -13,10 +13,6 @@ public class PCM extends Subsystem {
 	private DoubleSolenoid sol = new DoubleSolenoid(0, 1);
 	protected Compressor compressor = new Compressor();
 
-	public void clearAllPCMStickyFaults() {
-		sol.clearAllPCMStickyFaults();
-	}
-
 	public void printCompressorStats() {
 		System.out.println("\n\n******\t\tCompressor Stats:\t\t******");
 		System.out.println("\t\tGeneral:");
@@ -32,6 +28,11 @@ public class PCM extends Subsystem {
 		System.out.println("\t\t\t\tShortedFault: " + compressor.getCompressorShortedFault());
 		System.out.println("\t\t\t\tShortedStickyFault: " + compressor.getCompressorShortedStickyFault());
 		System.out.println("--------------------------------------");
+	}
+	
+	public void clearAllPCMStickyFaultsThroughCompressor() {
+		compressor.clearAllPCMStickyFaults();
+		System.out.println("\n\n\nPCM sticky faults cleared through compressor\n\n\n");
 	}
 	
 	/*
