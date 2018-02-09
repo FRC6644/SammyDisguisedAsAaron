@@ -1,6 +1,7 @@
 package org.usfirst.frc.team6644.robot.subsystems;
 
 import edu.wpi.first.wpilibj.command.Subsystem;
+import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.Spark;
 import edu.wpi.first.wpilibj.SpeedControllerGroup;
@@ -10,19 +11,39 @@ import org.usfirst.frc.team6644.robot.Robot;
 import org.usfirst.frc.team6644.robot.RobotPorts;
 
 public class DriveMotors extends Subsystem {
+	//Drivebase stuff
+	private static DriveMotors instance;
 	private static DifferentialDrive drive;
-	private final double motorSafteyExpireTime = 0.3;// sets the PWM to expire in 0.3 seconds after the last call of .Feed()
+	private static final double motorSafteyExpireTime = 0.3;// sets the PWM to expire in 0.3 seconds after the last call of .Feed()
 	private boolean disableMotors;
 	private double left = 0;
 	private double right = 0;
+	
+	//Encoder stuff
+	private static Encoder leftEncoder;
+	private static Encoder rightEncoder;
+	private static boolean encoderOut;
+	private static int encoderSamplesToAverage;
+	
 
-	public DriveMotors() {
+	public static DriveMotors getInstance() {
+		if(instance==null) {
+			instance=new DriveMotors();
+		}
+		return instance;
+	}
+	private DriveMotors() {
+		//create a DifferentialDrive
 		SpeedControllerGroup leftDriveGroup = new SpeedControllerGroup(new Spark(RobotPorts.LEFT_DRIVE_PWM_LONE.get()),
 				new Spark(RobotPorts.LEFT_DRIVE_PWM_SPLIT.get()));
 		SpeedControllerGroup rightDriveGroup = new SpeedControllerGroup(
 				new Spark(RobotPorts.RIGHT_DRIVE_PWM_LONE.get()), new Spark(RobotPorts.RIGHT_DRIVE_PWM_SPLIT.get()));
 		drive = new DifferentialDrive(leftDriveGroup, rightDriveGroup);
 		disableMotors = false;
+		
+		//do encoder stuff
+		encoderSamplesToAverage=2;
+		encoderOut=true;
 	}
 
 	/*
@@ -127,7 +148,88 @@ public class DriveMotors extends Subsystem {
 	public void enableMotors() {
 		disableMotors = false;
 	}
-
+	
+	/*
+	 * Encoder thingies
+	 */
+	
+	public void initializeEncoders() {
+		leftEncoder=new Encoder(0,1);
+		rightEncoder=new Encoder(2,3);
+		leftEncoder.setSamplesToAverage(encoderSamplesToAverage);
+		rightEncoder.setSamplesToAverage(encoderSamplesToAverage);
+		encoderSetDistancePerPulse(1.0); //TODO: determine encoderDistancePerPulse
+	}
+	
+	
+	public void freeEncoders() {
+		if(!encoderOut) {
+			leftEncoder.free();
+			rightEncoder.free();
+			leftEncoder=null;
+			rightEncoder=null;
+			encoderOut=true;
+		}
+	}
+	
+	public void checkEncoders() {
+		if (encoderOut) {
+			initializeEncoders();
+		}
+	}
+	
+	public void encoderSetDistancePerPulse(double r) {
+		leftEncoder.setDistancePerPulse(r);
+		rightEncoder.setDistancePerPulse(r);
+	}
+	
+	public int[] encoderGet() {
+		checkEncoders();
+		int[] thing=new int[2];
+		thing[0]=leftEncoder.get();
+		thing[1]=rightEncoder.get();
+		return thing;
+	}
+	
+	public int[] encoderRaw() {
+		checkEncoders();
+		int[] thing=new int[2];
+		thing[0]=leftEncoder.getRaw();
+		thing[1]=rightEncoder.getRaw();
+		return thing;
+	}
+	
+	public boolean[] encoderDirection() {
+		checkEncoders();
+		boolean[] thing=new boolean[2];
+		thing[0]=leftEncoder.getDirection();
+		thing[1]=rightEncoder.getDirection();
+		return thing;
+	}
+	
+	public double[] encoderDistance() {
+		checkEncoders();
+		double[] thing=new double[2];
+		thing[0]=leftEncoder.getDistance();
+		thing[1]=rightEncoder.getDistance();
+		return thing;
+	}
+	
+	public double[] encoderRate() {
+		checkEncoders();
+		double[] thing=new double[2];
+		thing[0]=leftEncoder.getRate();
+		thing[1]=rightEncoder.getRate();
+		return thing;
+	}
+	
+	public void encoderReset() {
+		leftEncoder.reset();
+		rightEncoder.reset();
+	}
+	
+	
+	
 	/*
 	 * stuff for SmartDashboard
 	 */

@@ -8,10 +8,11 @@ import edu.wpi.first.wpilibj.command.Scheduler;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
-import org.usfirst.frc.team6644.robot.subsystems.DriveMotors;
+//subsystems
 import org.usfirst.frc.team6644.robot.subsystems.PCM;
 import org.usfirst.frc.team6644.robot.subsystems.PDM;
 
+//commands
 import org.usfirst.frc.team6644.robot.commands.RunGearboxUntilEmergencyStop;
 import org.usfirst.frc.team6644.robot.commands.TankDriveTest;
 import org.usfirst.frc.team6644.robot.commands.DriveWithJoystick;
@@ -30,10 +31,8 @@ public class Robot extends IterativeRobot {
 	// Robot things
 	public static final Joystick joystick = new Joystick(RobotPorts.JOYSTICK.get());
 
-	// essential subsystems
-	public static final DriveMotors drivemotors = new DriveMotors();
-	
-	//public static final PDM pdm = new PDM(); TODO: Instantiating this thing throws a bunch of CAN Timeout errors. Figure out why.
+	// essential subsystems	
+	public static final PDM pdm = new PDM(); //TODO: Instantiating this thing throws a bunch of CAN Timeout errors. Figure out why.
 	public static final PCM pcm = new PCM();
 	
 	Command autonomousCommand;
