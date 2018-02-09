@@ -1,7 +1,7 @@
 package org.usfirst.frc.team6644.robot.commands;
 
 import edu.wpi.first.wpilibj.command.Command;
-import org.usfirst.frc.team6644.robot.Robot;
+import org.usfirst.frc.team6644.robot.subsystems.DriveMotors;
 
 /**
  *
@@ -9,17 +9,17 @@ import org.usfirst.frc.team6644.robot.Robot;
 public class RunGearboxUntilEmergencyStop extends Command {
 
     public RunGearboxUntilEmergencyStop() {
-        requires(Robot.drivemotors);
+        requires(DriveMotors.getInstance());
     }
 
     // Called just before this Command runs the first time
     protected void initialize() {
-    	Robot.drivemotors.disableSafety();
+    	DriveMotors.getInstance().disableSafety();
     }
 
     // Called repeatedly when this Command is scheduled to run
     protected void execute() {
-    	Robot.drivemotors.arcadeDrive(0.55,0);
+    	DriveMotors.getInstance().arcadeDrive(0.55,0);
     }
 
     // Make this return true when this Command no longer needs to run execute()
@@ -29,7 +29,7 @@ public class RunGearboxUntilEmergencyStop extends Command {
 
     // Called once after isFinished returns true
     protected void end() {
-    	Robot.drivemotors.stop();
+    	DriveMotors.getInstance().stop();
     }
 
     // Called when another command which requires one or more of the same

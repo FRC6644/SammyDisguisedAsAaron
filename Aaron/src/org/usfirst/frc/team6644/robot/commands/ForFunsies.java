@@ -26,6 +26,7 @@ public class ForFunsies extends Command {
     		s=new OperateSolenoid(2);
     		s.execute();
     	}
+    	Robot.pdm.printPDMStats();
     }
 
     // Make this return true when this Command no longer needs to run execute()
