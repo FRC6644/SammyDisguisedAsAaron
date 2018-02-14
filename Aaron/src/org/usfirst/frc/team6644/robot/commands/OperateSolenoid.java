@@ -23,6 +23,7 @@ public class OperateSolenoid extends Command {
 
 	// Called repeatedly when this Command is scheduled to run
 	protected void execute() {
+		
 		switch (mode) {
 		case 0:
 			Robot.pcm.setSolenoidForward();
