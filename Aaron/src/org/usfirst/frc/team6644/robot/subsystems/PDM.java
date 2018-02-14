@@ -14,12 +14,12 @@ public class PDM extends Subsystem {
 	}
 	
 	public void printPDMStats() {
-		System.out.println("\n\n****\t\tPower Distribution Module Stats:\t\t***");
-		System.out.println("\t\tTemperature:"+getTemperature());
-		System.out.println("\t\tVoltage:"+getVoltage());
+		//System.out.println("\n\n****\t\tPower Distribution Module Stats:\t\t***");
+		//System.out.println("\t\tTemperature:"+getTemperature());
+		//System.out.println("\t\tVoltage:"+getVoltage());
 		System.out.println("\t\tTotal Current:"+getTotalCurrent());
-		System.out.println("\t\tTotal Power:"+getTotalPower());
-		System.out.println("\t\tTotal Energy:"+getTotalEnergy());
+		//System.out.println("\t\tTotal Power:"+getTotalPower());
+		//System.out.println("\t\tTotal Energy:"+getTotalEnergy());
 		System.out.println("--------------------------------------");
 	}
 
@@ -30,19 +30,20 @@ public class PDM extends Subsystem {
 	public double getTemperature() {
 		return pdm.getTemperature();
 	}
-
+	
+	//getTotalCurrent causes a CAN Recieve Timeout error, and the other two methods rely on getTotalCurrent.
 	public double getTotalCurrent() {
 		return pdm.getTotalCurrent();
 	}
-
+	
 	public double getTotalEnergy() {
 		return pdm.getTotalEnergy();
 	}
-
+	
 	public double getTotalPower() {
 		return pdm.getTotalPower();
 	}
-
+	
 	public double getVoltage() {
 		return pdm.getVoltage();
 	}

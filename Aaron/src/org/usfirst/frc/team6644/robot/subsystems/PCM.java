@@ -50,22 +50,23 @@ public class PCM extends Subsystem {
 	/*
 	 * Double solenoid stuff below
 	 */
+	
 	public String getSolenoidValue() {
 		return sol.get().toString();
 	}
 	
 	public void setSolenoidForward() {
-		sol.set(DoubleSolenoid.Value.valueOf("kForward"));
+		sol.set(DoubleSolenoid.Value.kForward);
 	}
 	
 	public void setSolenoidOff() {
-		sol.set(DoubleSolenoid.Value.valueOf("kOff"));
+		sol.set(DoubleSolenoid.Value.kOff);
 	}
 	
 	public void setSolenoidReverse() {
-		sol.set(DoubleSolenoid.Value.valueOf("kReverse"));
+		sol.set(DoubleSolenoid.Value.kReverse);
 	}
-
+	
 	public void initDefaultCommand() {
 		// Set the default command for a subsystem here.
 		// setDefaultCommand(new MySpecialCommand());

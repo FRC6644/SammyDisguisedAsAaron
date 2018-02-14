@@ -1,21 +1,25 @@
 
 package org.usfirst.frc.team6644.robot;
 
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.IterativeRobot;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.command.Command;
 import edu.wpi.first.wpilibj.command.Scheduler;
+import edu.wpi.first.wpilibj.livewindow.LiveWindow;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 //subsystems
-import org.usfirst.frc.team6644.robot.subsystems.PCM;
-import org.usfirst.frc.team6644.robot.subsystems.PDM;
+import org.usfirst.frc.team6644.robot.subsystems.*;
 
 //commands
-import org.usfirst.frc.team6644.robot.commands.RunGearboxUntilEmergencyStop;
-import org.usfirst.frc.team6644.robot.commands.TankDriveTest;
-import org.usfirst.frc.team6644.robot.commands.DriveWithJoystick;
+//import org.usfirst.frc.team6644.robot.commands.RunGearboxUntilEmergencyStop;
+//import org.usfirst.frc.team6644.robot.commands.TankDriveTest;
+
+import java.io.File;
+
+import org.usfirst.frc.team6644.robot.commands.*;
 
 /**
  * The VM is configured to automatically run this class, and to call the
@@ -29,12 +33,13 @@ public class Robot extends IterativeRobot {
 	public static OI oi;
 
 	// Robot things
-	public static final Joystick joystick = new Joystick(RobotPorts.JOYSTICK.get());
+	public static Joystick joystick;
 
-	// essential subsystems	
-	public static final PDM pdm = new PDM(); //TODO: Instantiating this thing throws a bunch of CAN Timeout errors. Figure out why.
-	public static final PCM pcm = new PCM();
-	
+	// essential subsystems
+	public static PDM pdm; // TODO: Instantiating this thing throws a bunch of CAN Timeout errors. Figure
+							// out why.
+	public static PCM pcm;
+
 	Command autonomousCommand;
 	SendableChooser<Command> chooser = new SendableChooser<>();
 
@@ -44,20 +49,31 @@ public class Robot extends IterativeRobot {
 	 */
 	@Override
 	public void robotInit() {
+		LiveWindow.disableAllTelemetry(); // this fixes the CAN timeout error from the
+											// PowerDistributionMudule.getTotalCurrent()
+		joystick = new Joystick(RobotPorts.JOYSTICK.get());
+		pdm = new PDM();
+		pcm = new PCM();
 		oi = new OI();
 
+		// place to put custom files and such.
+		File custom = new File("custom" + File.separator);
+		if (!custom.exists()) {
+			custom.mkdir();
+		}
+
 		// subsystem and power stuff
-		
-		//pdm.clearStickyFaults();
-		//pcm.printCompressorStats();
-		pcm.clearAllPCMStickyFaultsThroughCompressor();
-		
-		
-		//pdm.printPDMStats();
+		DriveMotors.getInstance().countHistories();
+
+		// pdm.clearStickyFaults();
 		pcm.printCompressorStats();
-		//pcm.startCompressor();
-		//pcm.printCompressorStats();
-		
+		pcm.clearAllPCMStickyFaultsThroughCompressor();
+
+		// pdm.printPDMStats();
+		// pcm.printCompressorStats();
+		// pcm.startCompressor();
+		// pcm.printCompressorStats();
+
 		// chooser.addObject("My Auto", new MyAutoCommand());
 		SmartDashboard.putData("Auto mode", chooser);
 	}
@@ -69,7 +85,6 @@ public class Robot extends IterativeRobot {
 	 */
 	@Override
 	public void disabledInit() {
-
 	}
 
 	@Override
@@ -90,7 +105,9 @@ public class Robot extends IterativeRobot {
 	 */
 	@Override
 	public void autonomousInit() {
-		//Scheduler.getInstance().add(new TankDriveTest());
+		Scheduler.getInstance().add(new AutonomousTankDrive());
+		//Scheduler.getInstance().add(new UpdateSmartDashboard());
+		//DriveMotors.getInstance().encoderReset();
 	}
 
 	/**
@@ -104,6 +121,8 @@ public class Robot extends IterativeRobot {
 
 	@Override
 	public void teleopInit() {
+		pcm.setSolenoidOff();
+		Scheduler.getInstance().add(new UpdateSmartDashboard());
 		Scheduler.getInstance().add(new DriveWithJoystick());
 	}
 

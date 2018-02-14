@@ -7,27 +7,27 @@ import edu.wpi.first.wpilibj.command.Command;
 /**
  *
  */
-public class TankDriveTest extends Command {
+public class DriveOffHistory extends Command {
 
-    public TankDriveTest() {
-        // Use requires() here to declare subsystem dependencies
-        // eg. requires(chassis);
-    	requires(DriveMotors.getInstance());
+    public DriveOffHistory(int n) {
+        requires(DriveMotors.getInstance());
     }
 
     // Called just before this Command runs the first time
     protected void initialize() {
-    	DriveMotors.getInstance().disableSafety();
+    	DriveMotors.getInstance().startAutoMode();
+    	DriveMotors.getInstance().loadHistory(0);
+    	DriveMotors.getInstance().startDrivingFromHistory();
     }
 
     // Called repeatedly when this Command is scheduled to run
     protected void execute() {
-    	DriveMotors.getInstance().tankDrive(0.55, 0.55);
+    	DriveMotors.getInstance().driveWithJoystick();
     }
 
     // Make this return true when this Command no longer needs to run execute()
     protected boolean isFinished() {
-        return false;
+        return DriveMotors.getInstance().checkDrivingFromHistory();
     }
 
     // Called once after isFinished returns true
@@ -38,5 +38,7 @@ public class TankDriveTest extends Command {
     // Called when another command which requires one or more of the same
     // subsystems is scheduled to run
     protected void interrupted() {
+    	DriveMotors.getInstance().abortDrivingFromHistory();
+    	end();
     }
 }
