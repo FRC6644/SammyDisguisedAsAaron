@@ -42,12 +42,12 @@ public class DriveMotors extends Subsystem {
 	private static Encoder rightEncoder;
 
 	// Testing Stuff (please clear when done using these)
-	//TODO: DELETE THIS WHEN DONE
+	// TODO: DELETE THIS WHEN DONE
 	private static int rateCounter = 0;
-	private static boolean calculateScale=false;
-	private static boolean pressed=false;
-	private static JoystickButton searchForScale=new JoystickButton(Robot.joystick,11);
-	
+	private static boolean calculateScale = false;
+	private static boolean pressed = false;
+	private static JoystickButton searchForScale = new JoystickButton(Robot.joystick, 11);
+
 	public static DriveMotors getInstance() {
 		if (instance == null) {
 			instance = new DriveMotors();
@@ -70,18 +70,6 @@ public class DriveMotors extends Subsystem {
 		leftEncoder.setSamplesToAverage(2);
 		rightEncoder.setSamplesToAverage(2);
 		encoderSetDistancePerPulse(0.0020454076);
-
-		// set autonnomous stuff
-		driveHistory = null;
-		histories = 0;
-		drivingFromHistory = false;
-		historyCounter = 0;
-		pidLoopLeft = new PIDController(0, 0, 0, leftEncoder, new Spark(RobotPorts.LEFT_DRIVE_PWM_SPLIT.get()));
-		pidLoopRight = new PIDController(0, 0, 0, leftEncoder, new Spark(RobotPorts.RIGHT_DRIVE_PWM_SPLIT.get()));
-		pidLoopLeft.disable();
-		pidLoopRight.disable();
-		pidLoopLeft.setOutputRange(-1, 1);
-		pidLoopRight.setOutputRange(-1, 1);
 	}
 
 	/*
@@ -120,19 +108,39 @@ public class DriveMotors extends Subsystem {
 	public void stop() {
 		disableSafety();
 		drive.stopMotor();
-		if (pidLoopLeft.isEnabled()) {
-			pidLoopLeft.disable();
-		}
-		if (pidLoopRight.isEnabled()) {
-			pidLoopRight.disable();
+		try {
+			if (pidLoopLeft.isEnabled()) {
+				pidLoopLeft.disable();
+			}
+			if (pidLoopRight.isEnabled()) {
+				pidLoopRight.disable();
+			}
+		} catch (NullPointerException e) {
+			System.out.println("pidLoops not initialized");
 		}
 	}
 
 	public void startAutoMode() {
 		disableSafety();
 		// set setpoint
+		drive.free();
+		driveHistory = null;
+		histories = 0;
+		drivingFromHistory = false;
+		historyCounter = 0;
+		pidLoopLeft = new PIDController(0, 0, 0, leftEncoder, new Spark(RobotPorts.LEFT_DRIVE_PWM_SPLIT.get()));
+		pidLoopRight = new PIDController(0, 0, 0, leftEncoder, new Spark(RobotPorts.RIGHT_DRIVE_PWM_SPLIT.get()));
+		pidLoopLeft.setOutputRange(-1, 1);
+		pidLoopRight.setOutputRange(-1, 1);
 		pidLoopLeft.enable();
 		pidLoopRight.enable();
+	}
+
+	public void stopAutoMode() {
+		pidLoopLeft.free();
+		pidLoopRight.free();
+		drive = new DifferentialDrive(new Spark(RobotPorts.LEFT_DRIVE_PWM_SPLIT.get()),
+				new Spark(RobotPorts.RIGHT_DRIVE_PWM_SPLIT.get()));
 	}
 
 	public void startTeleopMode() {
@@ -160,17 +168,17 @@ public class DriveMotors extends Subsystem {
 			compensateDrive();
 		}
 		tankDrive(left, right, false);
-		//-----------------------------------------------------------------
-		//TODO: DELETE THIS WHEN DONE
-		
-		if(!pressed) {
-			calculateScale=searchForScale.get();
+		// -----------------------------------------------------------------
+		// TODO: DELETE THIS WHEN DONE
+
+		if (!pressed) {
+			calculateScale = searchForScale.get();
 		}
-		
-		if(calculateScale) {
+
+		if (calculateScale) {
 			findScaleFactor();
 		}
-		//------------------------------------------------------------------
+		// ------------------------------------------------------------------
 	}
 
 	public void compensateDrive() {
@@ -402,8 +410,8 @@ public class DriveMotors extends Subsystem {
 		double leftIn = 0;
 		double rightIn = 0;
 		if (rateCounter < 50) {
-			calculateScale=true;
-			pressed=true;
+			calculateScale = true;
+			pressed = true;
 			rateSamples = encoderRate();
 			driveInputs = getDriveOutputs();
 			scaleFactorLeft += rateSamples[0] / driveInputs[0];
@@ -412,15 +420,15 @@ public class DriveMotors extends Subsystem {
 			rightIn += driveInputs[1];
 			rateCounter++;
 		} else {
-			calculateScale=false;
-			pressed=false;
-			scaleFactorLeft/=50;
-			scaleFactorRight/=50;
-			leftIn/=50;
-			rightIn/=50;
+			calculateScale = false;
+			pressed = false;
+			scaleFactorLeft /= 50;
+			scaleFactorRight /= 50;
+			leftIn /= 50;
+			rightIn /= 50;
 			System.out.println("\n\n\n\n-----------------------------------------------");
-			System.out.println("Input: "+leftIn+"; Scale Factor: "+scaleFactorLeft+";");
-			System.out.println("Input: "+rightIn+"; Scale Factor: "+scaleFactorRight+";");
+			System.out.println("Input: " + leftIn + "; Scale Factor: " + scaleFactorLeft + ";");
+			System.out.println("Input: " + rightIn + "; Scale Factor: " + scaleFactorRight + ";");
 		}
 	}
 }

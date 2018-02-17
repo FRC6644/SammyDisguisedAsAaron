@@ -12,10 +12,10 @@ public class ElevatorMotor extends Subsystem {
 
     // Put methods for controlling this subsystem
     // here. Call these from Commands.
-	private ElevatorMotor instance;
-	private Spark elevatorController;
+	private static ElevatorMotor instance;
+	private static Spark elevatorController;
 
-	public ElevatorMotor getInstance() {
+	public static ElevatorMotor getInstance() {
 		if (instance == null) {
 			instance = new ElevatorMotor();
 		}

@@ -50,11 +50,12 @@ public class Robot extends IterativeRobot {
 	public void robotInit() {
 		LiveWindow.disableAllTelemetry(); // this fixes the CAN timeout error from the
 											// PowerDistributionMudule.getTotalCurrent()
+
 		joystick = new Joystick(RobotPorts.JOYSTICK.get());
 		pdm = new PDM();
 		pcm = new PCM();
+		
 		oi = new OI();
-
 		// place to put custom files and such.
 		File custom = new File("custom" + File.separator);
 		if (!custom.exists()) {
@@ -130,6 +131,7 @@ public class Robot extends IterativeRobot {
 		pcm.setSolenoidOff();
 		Scheduler.getInstance().add(new UpdateSmartDashboard());
 		Scheduler.getInstance().add(new DriveWithJoystick());
+		Scheduler.getInstance().add(new ControlElevator());
 	}
 
 	/**
