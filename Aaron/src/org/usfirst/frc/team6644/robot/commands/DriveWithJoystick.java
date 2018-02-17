@@ -3,13 +3,15 @@ package org.usfirst.frc.team6644.robot.commands;
 import org.usfirst.frc.team6644.robot.Robot;
 import org.usfirst.frc.team6644.robot.subsystems.DriveMotors;
 
+import edu.wpi.first.wpilibj.buttons.JoystickButton;
 import edu.wpi.first.wpilibj.command.Command;
 
 /**
  *
  */
 public class DriveWithJoystick extends Command {
-
+	JoystickButton linearDrive=new JoystickButton(Robot.joystick,1);
+	JoystickButton compensate=new JoystickButton(Robot.joystick,2);
     public DriveWithJoystick() {
         requires(DriveMotors.getInstance());
     }
@@ -22,7 +24,7 @@ public class DriveWithJoystick extends Command {
 
     // Called repeatedly when this Command is scheduled to run
     protected void execute() {
-    	DriveMotors.getInstance().driveWithJoystick();
+    	DriveMotors.getInstance().driveWithJoystick(linearDrive.get(),compensate.get());
     }
 
     // Make this return true when this Command no longer needs to run execute()

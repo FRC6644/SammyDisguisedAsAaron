@@ -36,8 +36,7 @@ public class Robot extends IterativeRobot {
 	public static Joystick joystick;
 
 	// essential subsystems
-	public static PDM pdm; // TODO: Instantiating this thing throws a bunch of CAN Timeout errors. Figure
-							// out why.
+	public static PDM pdm;
 	public static PCM pcm;
 
 	Command autonomousCommand;
@@ -76,6 +75,11 @@ public class Robot extends IterativeRobot {
 
 		// chooser.addObject("My Auto", new MyAutoCommand());
 		SmartDashboard.putData("Auto mode", chooser);
+		
+		//starts robot in low gear
+		Scheduler.getInstance().add(new OperateSolenoid(2));
+		Scheduler.getInstance().run();
+		Scheduler.getInstance().removeAll();
 	}
 
 	/**
@@ -85,6 +89,8 @@ public class Robot extends IterativeRobot {
 	 */
 	@Override
 	public void disabledInit() {
+		Scheduler.getInstance().removeAll();
+		Scheduler.getInstance().add(new UpdateSmartDashboard());
 	}
 
 	@Override

@@ -11,17 +11,15 @@ import edu.wpi.first.wpilibj.buttons.JoystickButton;
  * interface to the commands and command groups that allow control of the robot.
  */
 public class OI {
-	JoystickButton forward = new JoystickButton(Robot.joystick, 3);
-	JoystickButton off = new JoystickButton(Robot.joystick, 9);
-	JoystickButton reverse = new JoystickButton(Robot.joystick, 5);
+	JoystickButton lowGear = new JoystickButton(Robot.joystick, 3);
+	JoystickButton highGear = new JoystickButton(Robot.joystick, 5);
 	JoystickButton driveHistory = new JoystickButton(Robot.joystick, 12);
 
 	public OI() {
 
 		// Operate solenoid
-		forward.whenPressed(new OperateSolenoid(0));
-		off.whenPressed(new OperateSolenoid(1));
-		reverse.whenPressed(new OperateSolenoid(2));
+		lowGear.whenPressed(new OperateSolenoid(0));
+		highGear.whenPressed(new OperateSolenoid(2));
 
 		// Record history in TeleOp
 		if (DriverStation.getInstance().isOperatorControl() && DriverStation.getInstance().isEnabled()) {

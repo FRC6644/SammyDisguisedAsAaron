@@ -13,7 +13,7 @@ public class ElevatorMotor extends Subsystem {
     // Put methods for controlling this subsystem
     // here. Call these from Commands.
 	private ElevatorMotor instance;
-	private Spark elevator;
+	private Spark elevatorController;
 
 	public ElevatorMotor getInstance() {
 		if (instance == null) {
@@ -23,7 +23,15 @@ public class ElevatorMotor extends Subsystem {
 	}
 	
 	private ElevatorMotor() {
-		elevator=new Spark(RobotPorts.ELEVATOR_MOTOR.get());
+		elevatorController=new Spark(RobotPorts.ELEVATOR_MOTOR.get());
+	}
+	
+	public void setElevatorSpeed(double speed){
+		elevatorController.set(speed);
+	}
+	
+	public void stop() {
+		elevatorController.stopMotor();
 	}
 
     public void initDefaultCommand() {
