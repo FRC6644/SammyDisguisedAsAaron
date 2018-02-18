@@ -18,6 +18,7 @@ import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 
 import org.usfirst.frc.team6644.robot.Robot;
 import org.usfirst.frc.team6644.robot.RobotPorts;
+import org.usfirst.frc.team6644.robot.libraryAdditions.DriveEncodersPID;
 
 public class DriveMotors extends Subsystem {
 	// Drivebase stuff
@@ -26,8 +27,8 @@ public class DriveMotors extends Subsystem {
 	private static final double motorSafteyExpireTime = 0.3;// sets the PWM to expire in 0.3 seconds after the last call
 															// of .Feed()
 	private boolean disableMotors;
-	private double left = 0;
-	private double right = 0;
+	protected double left = 0;
+	protected double right = 0;
 
 	// Autonomous Stuff
 	private static boolean drivingFromHistory;
@@ -38,8 +39,7 @@ public class DriveMotors extends Subsystem {
 	private static PIDController pidLoopRight;
 
 	// Encoder stuff
-	private static Encoder leftEncoder;
-	private static Encoder rightEncoder;
+	private static DriveEncodersPID encoders;
 
 	// Testing Stuff (please clear when done using these)
 	// TODO: DELETE THIS WHEN DONE
@@ -62,14 +62,16 @@ public class DriveMotors extends Subsystem {
 		disableMotors = false;
 
 		// do encoder stuff
-		leftEncoder = new Encoder(0, 1);
-		rightEncoder = new Encoder(2, 3);
-		leftEncoder.reset();
-		rightEncoder.reset();
-		leftEncoder.setReverseDirection(true);
-		leftEncoder.setSamplesToAverage(2);
-		rightEncoder.setSamplesToAverage(2);
-		encoderSetDistancePerPulse(0.0020454076);
+		encoders = new DriveEncodersPID(new Encoder(RobotPorts.LEFT_ENCODER_A.get(), RobotPorts.LEFT_ENCODER_B.get()),
+				new Encoder(RobotPorts.RIGHT_ENCODER_A.get(), RobotPorts.RIGHT_ENCODER_B.get()));
+		encoders.encoderReset();
+		encoders.setReverseDirection(true, false);
+		encoders.encoderSetSamplesToAverage(4);
+		encoders.encoderSetDistancePerPulse(0.0020454076); // this is in ft/pulse
+	}
+
+	public DriveEncodersPID getEncoders() {
+		return encoders;
 	}
 
 	/*
@@ -181,11 +183,10 @@ public class DriveMotors extends Subsystem {
 		// ------------------------------------------------------------------
 	}
 
-	public void compensateDrive() {
+	public void straightDrive() {
 		double[] rate = encoderRate();
 		double difference = rate[0] - rate[1];
-		double expectedDifference = left - right;
-		// TODO: find scale factor between rate and tankDrive inputs.
+
 	}
 
 	public void toggleMotorDisableState() {
@@ -198,68 +199,6 @@ public class DriveMotors extends Subsystem {
 
 	public void enableMotors() {
 		disableMotors = false;
-	}
-
-	public void returnPIDInput() {
-
-	}
-
-	public void usePIDOutput() {
-
-	}
-
-	/*
-	 * Encoder thingies
-	 */
-	public void freeEncoders() {
-		System.out.println("\n\n\nFREED\n\n\n");
-		leftEncoder.free();
-		rightEncoder.free();
-	}
-
-	public void encoderSetDistancePerPulse(double r) {
-		leftEncoder.setDistancePerPulse(r);
-		rightEncoder.setDistancePerPulse(r);
-	}
-
-	public int[] encoderGet() {
-		int[] thing = new int[2];
-		thing[0] = leftEncoder.get();
-		thing[1] = rightEncoder.get();
-		return thing;
-	}
-
-	public int[] encoderRaw() {
-		int[] thing = new int[2];
-		thing[0] = leftEncoder.getRaw();
-		thing[1] = rightEncoder.getRaw();
-		return thing;
-	}
-
-	public boolean[] encoderDirection() {
-		boolean[] thing = new boolean[2];
-		thing[0] = leftEncoder.getDirection();
-		thing[1] = rightEncoder.getDirection();
-		return thing;
-	}
-
-	public double[] encoderDistance() {
-		double[] thing = new double[2];
-		thing[0] = leftEncoder.getDistance();
-		thing[1] = rightEncoder.getDistance();
-		return thing;
-	}
-
-	public double[] encoderRate() {
-		double[] thing = new double[2];
-		thing[0] = leftEncoder.getRate();
-		thing[1] = rightEncoder.getRate();
-		return thing;
-	}
-
-	public void encoderReset() {
-		leftEncoder.reset();
-		rightEncoder.reset();
 	}
 
 	/*

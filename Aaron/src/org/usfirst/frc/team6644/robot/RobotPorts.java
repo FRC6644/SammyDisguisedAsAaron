@@ -9,9 +9,10 @@ public enum RobotPorts {
 	RIGHT_DRIVE_PWM_SPLIT(1), LEFT_DRIVE_PWM_SPLIT(0), LEFT_GRABBER_MOTOR(2), RIGHT_GRABBER_MOTOR(3), ELEVATOR_MOTOR(4),
 
 	// Analog Ports
-	FORCE_SENSOR_LEFT(0), FORCE_SENSOR_RIGHT(1);
+	FORCE_SENSOR_LEFT(0), FORCE_SENSOR_RIGHT(1),
+	
 	// Digital Ports
-
+	LEFT_ENCODER_A(0), LEFT_ENCODER_B(1), RIGHT_ENCODER_A(2), RIGHT_ENCODER_B(3);
 	private final int portNumber;
 
 	private RobotPorts(int portNumber) {

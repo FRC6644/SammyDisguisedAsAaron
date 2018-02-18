@@ -36,7 +36,7 @@ public class UpdateSmartDashboard extends Command {
 			DriveMotors.getInstance().testDrive(linearDrive.get(), compensate.get());
 		}
 
-		encoderValues = DriveMotors.getInstance().encoderDistance();
+		encoderValues = DriveMotors.getInstance().getEncoders().encoderDistance();
 		driveOutputs = DriveMotors.getInstance().getDriveOutputs();
 		SmartDashboard.putNumber("Encoder left value: ", encoderValues[0]);
 		SmartDashboard.putNumber("Encoder right value: ", encoderValues[1]);
@@ -55,7 +55,7 @@ public class UpdateSmartDashboard extends Command {
 
 	// Called once after isFinished returns true
 	protected void end() {
-		
+
 	}
 
 	// Called when another command which requires one or more of the same
