@@ -13,38 +13,25 @@ import edu.wpi.first.wpilibj.SpeedController;
  */
 public class DifferentialDrivePID extends DifferentialDrive implements PIDOutput {
 	private boolean compare;
-	private boolean rate;
 
 	public DifferentialDrivePID(SpeedController leftMotor, SpeedController rightMotor) {
 		super(leftMotor, rightMotor);
 		compare = false;
-		rate = false;
 	}
 
-	public DifferentialDrivePID(SpeedController leftMotor, SpeedController rightMotor, boolean rate) {
-		super(leftMotor, rightMotor);
-		compare = false;
-		this.rate = rate;
-	}
-
-	public DifferentialDrivePID(SpeedController leftMotor, SpeedController rightMotor, boolean rate, boolean compare) {
+	public DifferentialDrivePID(SpeedController leftMotor, SpeedController rightMotor, boolean compare) {
 		super(leftMotor, rightMotor);
 		this.compare = compare;
-		this.rate = compare;
 	}
 
 	public void setCompare(boolean state) {
 		compare = state;
 	}
 
-	public void setRate(boolean state) {
-		rate = state;
-	}
-
 	/**
 	 * If (compare==true){ Attempts to drive straight by preferentially increasing
 	 * the speed of the lagging side (the side with lowest speed, irrespective of
-	 * direction), then decreasing the speed of the faster side. } else {
+	 * direction), then decreasing the speed of the faster side.} else {
 	 * 
 	 */
 	public void pidWrite(double output) {
@@ -52,20 +39,21 @@ public class DifferentialDrivePID extends DifferentialDrive implements PIDOutput
 		if (compare) {
 			boolean[] directions = DriveMotors.getInstance().getEncoders().encoderDirection();
 			if (directions[0] == directions[1]) {
-				int sign = (directions[0] ? 1 : 0) * 2 - 1;
-				if (rate) {
-					if (Math.abs(outputs[0]) > Math.abs(outputs[1])/*Is this necessary?*/) {
-						
-					}
+				double compensate = output * ((directions[0] ? 1 : 0) * 2 - 1); // TODO:ASSUMES true is forward. Check
+																				// this assumption.
+				if (compensate > 0) {
+					outputs[1] = limit(outputs[1] + output);
+					outputs[0] = limit(outputs[0]
+							- ((1 - Math.abs(outputs[1]) < compensate) ? (output + outputs[1] - 1) : 0));
 				} else {
+					outputs[0] = limit(outputs[0] + compensate);
+					outputs[1] = limit(outputs[1]
+							- ((1 - Math.abs(outputs[0]) < output) ? (output + outputs[0] - 1) : 0));
 				}
+				this.tankDrive(outputs[0], outputs[1], false);
 			}
 		} else {
-			if (rate) {
-
-			} else {
-
-			}
+			//do stuff for driving a set distance
 		}
 	}
 }

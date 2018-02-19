@@ -29,8 +29,6 @@ public class RecordDriveHistory extends Command {
 	// Make this return true when this Command no longer needs to run execute()
 	protected boolean isFinished() {
 		return !monitor.get();
-		// TODO: Assumes that joystick buttons return true when held down. Check this
-		// assumption.
 	}
 
 	// Called once after isFinished returns true
