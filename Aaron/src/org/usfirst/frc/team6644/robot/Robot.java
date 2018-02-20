@@ -1,7 +1,6 @@
 
 package org.usfirst.frc.team6644.robot;
 
-import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.IterativeRobot;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.command.Command;
@@ -12,12 +11,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 //subsystems
 import org.usfirst.frc.team6644.robot.subsystems.*;
-
-//commands
-//import org.usfirst.frc.team6644.robot.commands.RunGearboxUntilEmergencyStop;
-//import org.usfirst.frc.team6644.robot.commands.TankDriveTest;
-
-import java.io.File;
+import org.usfirst.frc.team6644.robot.subsystems.drive.DriveMotors;
 
 import org.usfirst.frc.team6644.robot.commands.*;
 
@@ -54,16 +48,11 @@ public class Robot extends IterativeRobot {
 		joystick = new Joystick(RobotPorts.JOYSTICK.get());
 		pdm = new PDM();
 		pcm = new PCM();
-		
+
 		oi = new OI();
-		// place to put custom files and such.
-		File custom = new File("custom" + File.separator);
-		if (!custom.exists()) {
-			custom.mkdir();
-		}
 
 		// subsystem and power stuff
-		DriveMotors.getInstance().countHistories();
+		DriveMotors.getInstance().getHistory().count();
 
 		// pdm.clearStickyFaults();
 		pcm.printCompressorStats();
@@ -76,8 +65,8 @@ public class Robot extends IterativeRobot {
 
 		// chooser.addObject("My Auto", new MyAutoCommand());
 		SmartDashboard.putData("Auto mode", chooser);
-		
-		//starts robot in low gear
+
+		// starts robot in low gear
 		Scheduler.getInstance().add(new OperateSolenoid(2));
 		Scheduler.getInstance().run();
 		Scheduler.getInstance().removeAll();
@@ -113,8 +102,8 @@ public class Robot extends IterativeRobot {
 	@Override
 	public void autonomousInit() {
 		Scheduler.getInstance().add(new AutonomousTankDrive());
-		//Scheduler.getInstance().add(new UpdateSmartDashboard());
-		//DriveMotors.getInstance().encoderReset();
+		// Scheduler.getInstance().add(new UpdateSmartDashboard());
+		// DriveMotors.getInstance().encoderReset();
 	}
 
 	/**

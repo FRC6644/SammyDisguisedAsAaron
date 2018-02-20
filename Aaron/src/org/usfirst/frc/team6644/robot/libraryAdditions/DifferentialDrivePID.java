@@ -1,6 +1,6 @@
 package org.usfirst.frc.team6644.robot.libraryAdditions;
 
-import org.usfirst.frc.team6644.robot.subsystems.DriveMotors;
+import org.usfirst.frc.team6644.robot.subsystems.drive.DriveMotors;
 
 import edu.wpi.first.wpilibj.PIDOutput;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;

@@ -1,11 +1,4 @@
-package org.usfirst.frc.team6644.robot.subsystems;
-
-import java.util.ArrayList;
-import java.util.Scanner;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileWriter;
-import java.io.IOException;
+package org.usfirst.frc.team6644.robot.subsystems.drive;
 
 import edu.wpi.first.wpilibj.command.Subsystem;
 import edu.wpi.first.wpilibj.Encoder;
@@ -13,16 +6,16 @@ import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.PIDController;
 import edu.wpi.first.wpilibj.PIDSourceType;
 import edu.wpi.first.wpilibj.Spark;
-import edu.wpi.first.wpilibj.SpeedControllerGroup;
 import edu.wpi.first.wpilibj.buttons.JoystickButton;
-import edu.wpi.first.wpilibj.drive.DifferentialDrive;
-
 import org.usfirst.frc.team6644.robot.Robot;
 import org.usfirst.frc.team6644.robot.RobotPorts;
 import org.usfirst.frc.team6644.robot.libraryAdditions.DifferentialDrivePID;
 import org.usfirst.frc.team6644.robot.libraryAdditions.DriveEncodersPID;
 
 public class DriveMotors extends Subsystem {
+	// History
+	private static History history = History.getInstance();
+
 	// Drivebase stuff
 	private static DriveMotors instance;
 	private static DifferentialDrivePID drive;
@@ -34,9 +27,6 @@ public class DriveMotors extends Subsystem {
 
 	// Autonomous Stuff
 	private static boolean drivingFromHistory;
-	private static ArrayList<double[]> driveHistory;
-	private static int histories;
-	private static int historyCounter;
 	private static PIDController StraighteningPID;
 
 	// Encoder stuff
@@ -97,26 +87,14 @@ public class DriveMotors extends Subsystem {
 	}
 
 	public void tankDrive(double left, double right, boolean squaredInputs) {
-		// left and right should be double values at/between -1 and 1.
-
-		// Use enableSaftey for turning on drive motor safety. Not much sense in turning
-		// safety on in one motor but not the other.
-		// DO NOT HAVE MOTOR INPUTS GREATER IN MAGNITUDE THAN 1
-		if (Math.abs(left) > 1 || Math.abs(right) > 1) {
-			System.out.println("ERROR: MOTOR OUTPUTS ARE GREATER IN MAGNITUDE THAN 1");
-		}
 		drive.tankDrive(left, right, squaredInputs);
 	}
 
 	public void stop() {
 		disableSafety();
 		drive.stopMotor();
-		try {
-			if (StraighteningPID.isEnabled()) {
-				StraighteningPID.disable();
-			}
-		} catch (NullPointerException e) {
-			System.out.println("pidLoops not initialized");
+		if (StraighteningPID != null && StraighteningPID.isEnabled()) {
+			StraighteningPID.disable();
 		}
 	}
 
@@ -124,10 +102,9 @@ public class DriveMotors extends Subsystem {
 		disableSafety();
 		// set setpoint
 		drive.free();
-		driveHistory = null;
-		histories = 0;
+		history.clear();
+		history.resetCount();
 		drivingFromHistory = false;
-		historyCounter = 0;
 		encoders.setPIDSourceType(PIDSourceType.kDisplacement);
 		StraighteningPID = new PIDController(0, 0, 0, encoders, drive);
 		StraighteningPID.setOutputRange(-1, 1);
@@ -191,95 +168,12 @@ public class DriveMotors extends Subsystem {
 		disableMotors = false;
 	}
 
-	/*
-	 * Stuff for drive histories
-	 * 
-	 * Hopefully this is a really quick way of getting some sort of autonomous mode
-	 * up if sensors end up taking too long.
-	 */
-
-	public void startHistory() {
-		driveHistory = new ArrayList<double[]>();
-	}
-
-	public void updateHistory() {
-		// Please don't leave this method running for so long that the RoboRio runs out
-		// of RAM... That will make all of the programmers sad.
-		driveHistory.add(getDriveOutputs());
-	}
-
-	public void endHistory() {
-		endHistory(histories);
-		histories++;
-	}
-
-	public void endHistory(int n) {
-		File dh = new File("custom" + File.separator + "driveHistory" + n + ".txt");
-
-		// Check if file already exists. If so, delete it.
-		if (dh.exists()) {
-			dh.delete();
-		}
-
-		// Create new file
-		try {
-			dh.createNewFile();
-		} catch (IOException e) {
-			System.out.println("Hey, look at DriveMotors.endHistory(int n)... Something's wrong 1.\n" + e);
-		}
-
-		// load ArrayList into a StringBuilder
-		StringBuilder output = new StringBuilder();
-		for (int i = 0; i < driveHistory.size(); i++) {
-			output.append(driveHistory.get(i)[0]);
-			output.append(";");
-			output.append(driveHistory.get(i)[1]);
-			output.append(";");
-		}
-
-		// delete array
-		driveHistory = null;
-
-		// write StringBuilder output to File dh
-		try {
-			FileWriter scribble = new FileWriter(dh);
-			scribble.write(output.toString());
-			scribble.close();
-		} catch (IOException e) {
-			System.out.println("Hey, look at DriveMotors.endHistory(int n)... Something's wrong 2.\n" + e);
-		}
-	}
-
-	public void countHistories() {
-		File dh = new File("custom" + File.separator + "driveHistory0.txt");
-		int counter = 0;
-		while (dh.exists()) {
-			counter++;
-			dh = new File("custom" + File.separator + "driveHistory" + counter + ".txt");
-		}
-		histories = counter;
-	}
-
-	public void loadHistory(int n) {
-		File dh = new File("custom" + File.separator + "driveHistory" + n + ".txt");
-		try {
-			// scan through driveHistory text file for left and right motor outputs and add
-			// those to driveHistory.
-			Scanner scan = new Scanner(dh);
-			scan.useDelimiter(";");
-			while (scan.hasNext()) {
-				driveHistory.add(new double[] { Double.parseDouble(scan.next()), Double.parseDouble(scan.next()) });
-			}
-			scan.close();
-		} catch (FileNotFoundException e) {
-			System.out.println(
-					"Look in DriveMotors, no such driveHistory" + n + " file found... Something's wrong 0.\n" + e);
-		}
+	public History getHistory() {
+		return history;
 	}
 
 	public void startDrivingFromHistory() {
 		drivingFromHistory = true;
-		historyCounter = 0;
 	}
 
 	public boolean checkDrivingFromHistory() {
@@ -287,22 +181,23 @@ public class DriveMotors extends Subsystem {
 	}
 
 	public void abortDrivingFromHistory() {
-		driveHistory = null;
-		histories = 0;
+		history.clear();
+		history.resetCount();
 		drivingFromHistory = false;
-		historyCounter = 0;
 	}
 
 	/*
 	 * stuff for SmartDashboard
 	 */
 
+	/**
+	 * Returns the current output of the drive motors as an array [left, right]
+	 * 
+	 * @return Current outputs of motors from -1 to 1, left to right
+	 */
 	public double[] getDriveOutputs() {
 		// returns an array [left,right]
-		double[] driveOutputs = new double[2];
-		driveOutputs[0] = left;
-		driveOutputs[1] = right;
-		return driveOutputs;
+		return new double[] { left, right };
 	}
 
 	public void initDefaultCommand() {

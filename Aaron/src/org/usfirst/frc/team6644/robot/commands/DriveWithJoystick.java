@@ -2,7 +2,7 @@ package org.usfirst.frc.team6644.robot.commands;
 
 import org.usfirst.frc.team6644.robot.OI;
 import org.usfirst.frc.team6644.robot.Robot;
-import org.usfirst.frc.team6644.robot.subsystems.DriveMotors;
+import org.usfirst.frc.team6644.robot.subsystems.drive.DriveMotors;
 
 import edu.wpi.first.wpilibj.buttons.JoystickButton;
 import edu.wpi.first.wpilibj.command.Command;

@@ -1,7 +1,7 @@
 package org.usfirst.frc.team6644.robot.commands;
 
 import org.usfirst.frc.team6644.robot.Robot;
-import org.usfirst.frc.team6644.robot.subsystems.DriveMotors;
+import org.usfirst.frc.team6644.robot.subsystems.drive.DriveMotors;
 
 import edu.wpi.first.wpilibj.Spark;
 import edu.wpi.first.wpilibj.command.Command;
