@@ -1,43 +1,41 @@
 package org.usfirst.frc.team6644.robot.commands;
 
 import org.usfirst.frc.team6644.robot.OI;
-import org.usfirst.frc.team6644.robot.Robot;
 import org.usfirst.frc.team6644.robot.subsystems.drive.DriveMotors;
 
-import edu.wpi.first.wpilibj.buttons.JoystickButton;
 import edu.wpi.first.wpilibj.command.Command;
 
 /**
  *
  */
 public class DriveWithJoystick extends Command {
-	
-    public DriveWithJoystick() {
-        requires(DriveMotors.getInstance());
-    }
 
-    // Called just before this Command runs the first time
-    protected void initialize() {
-    	DriveMotors.getInstance().startTeleopMode();
-    }
+	public DriveWithJoystick() {
+		requires(DriveMotors.getInstance());
+	}
 
-    // Called repeatedly when this Command is scheduled to run
-    protected void execute() {
-    	DriveMotors.getInstance().driveWithJoystick(OI.linearDrive.get(),OI.compensate.get());
-    }
+	// Called just before this Command runs the first time
+	protected void initialize() {
+		DriveMotors.getInstance().startTeleopMode();
+	}
 
-    // Make this return true when this Command no longer needs to run execute()
-    protected boolean isFinished() {
-        return false;
-    }
+	// Called repeatedly when this Command is scheduled to run
+	protected void execute() {
+		DriveMotors.getInstance().driveWithJoystick(true, false);
+	}
 
-    // Called once after isFinished returns true
-    protected void end() {
-    	DriveMotors.getInstance().stop();
-    }
+	// Make this return true when this Command no longer needs to run execute()
+	protected boolean isFinished() {
+		return false;
+	}
 
-    // Called when another command which requires one or more of the same
-    // subsystems is scheduled to run
-    protected void interrupted() {
-    }
+	// Called once after isFinished returns true
+	protected void end() {
+		DriveMotors.getInstance().stop();
+	}
+
+	// Called when another command which requires one or more of the same
+	// subsystems is scheduled to run
+	protected void interrupted() {
+	}
 }

@@ -23,10 +23,11 @@ public class ControlElevator extends Command {
 
 	// Called repeatedly when this Command is scheduled to run
 	protected void execute() {
-		if(OI.elevator.get()) {
-			System.out.println("RUNNING");
+		if (OI.elevatorUp.get()) {
 			ElevatorMotor.getInstance().setElevatorSpeed(1);
-		}else {
+		} else if (OI.elevatorDown.get()) {
+			ElevatorMotor.getInstance().setElevatorSpeed(-1);
+		} else {
 			ElevatorMotor.getInstance().setElevatorSpeed(0);
 		}
 	}
