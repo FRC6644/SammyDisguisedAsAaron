@@ -26,7 +26,7 @@ public class DriveOffHistory extends Command {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		DriveMotors.getInstance().startDrivingFromHistory();
+		DriveMotors.getInstance().getHistory().enable();
 	}
 
 	// Called repeatedly when this Command is scheduled to run
@@ -36,7 +36,7 @@ public class DriveOffHistory extends Command {
 
 	// Make this return true when this Command no longer needs to run execute()
 	protected boolean isFinished() {
-		return DriveMotors.getInstance().checkDrivingFromHistory();
+		return !DriveMotors.getInstance().getHistory().inUse();
 	}
 
 	// Called once after isFinished returns true
@@ -47,7 +47,7 @@ public class DriveOffHistory extends Command {
 	// Called when another command which requires one or more of the same
 	// subsystems is scheduled to run
 	protected void interrupted() {
-		DriveMotors.getInstance().abortDrivingFromHistory();
+		DriveMotors.getInstance().getHistory().abort();
 		end();
 	}
 }

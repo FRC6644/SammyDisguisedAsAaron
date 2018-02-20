@@ -20,7 +20,7 @@ public class AutonomousTest extends Command {
 
 	// Called just before this Command runs the first time
 	protected void initialize() {
-		DriveMotors.getInstance().disableSafety();
+		DriveMotors.getInstance().startAutoMode();
 		// Robot.pcm.printCompressorStats();
 		System.out.println("\n\n\n\n\n_________________________________\n\n\t\t\tPWM Loop Sweep Starting...");
 	}

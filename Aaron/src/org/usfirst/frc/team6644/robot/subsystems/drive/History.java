@@ -161,4 +161,13 @@ public class History {
 	public boolean inUse() {
 		return use;
 	}
+
+	/**
+	 * Aborts an in-progress drive from history
+	 */
+	public void abort() {
+		clear();
+		resetCount();
+		disable();
+	}
 }

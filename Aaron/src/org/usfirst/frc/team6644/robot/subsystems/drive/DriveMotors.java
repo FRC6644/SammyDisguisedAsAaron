@@ -16,17 +16,17 @@ public class DriveMotors extends Subsystem {
 	// History
 	private static History history = History.getInstance();
 
+	// Safety
+	private static Safety safety = Safety.getInstance();
+
 	// Drivebase stuff
 	private static DriveMotors instance;
 	private static DifferentialDrivePID drive;
-	private static final double motorSafteyExpireTime = 0.3;// sets the PWM to expire in 0.3 seconds after the last call
-															// of .Feed()
-	private boolean disableMotors;
+
 	protected double left = 0;
 	protected double right = 0;
 
 	// Autonomous Stuff
-	private static boolean drivingFromHistory;
 	private static PIDController StraighteningPID;
 
 	// Encoder stuff
@@ -50,7 +50,7 @@ public class DriveMotors extends Subsystem {
 		// create a DifferentialDrive
 		drive = new DifferentialDrivePID(new Spark(RobotPorts.LEFT_DRIVE_PWM_SPLIT.get()),
 				new Spark(RobotPorts.RIGHT_DRIVE_PWM_SPLIT.get()), true);
-		disableMotors = false;
+		safety.registerMotor(drive);
 
 		// do encoder stuff
 		encoders = new DriveEncodersPID(new Encoder(RobotPorts.LEFT_ENCODER_A.get(), RobotPorts.LEFT_ENCODER_B.get()),
@@ -68,15 +68,6 @@ public class DriveMotors extends Subsystem {
 	/*
 	 * methods for drive motors
 	 */
-	public void enableSaftey() {
-		drive.setSafetyEnabled(true);
-		drive.setExpiration(motorSafteyExpireTime);
-	}
-
-	public void disableSafety() {
-		drive.setSafetyEnabled(false);
-		drive.setExpiration(motorSafteyExpireTime);
-	}
 
 	public void arcadeDrive(double linear, double turn) {
 		drive.arcadeDrive(linear, turn);
@@ -87,11 +78,13 @@ public class DriveMotors extends Subsystem {
 	}
 
 	public void tankDrive(double left, double right, boolean squaredInputs) {
-		drive.tankDrive(left, right, squaredInputs);
+		double[] outputs = { left, right };
+		safety.modify(outputs);
+		drive.tankDrive(outputs[0], outputs[1], squaredInputs);
 	}
 
 	public void stop() {
-		disableSafety();
+		safety.disableAll();
 		drive.stopMotor();
 		if (StraighteningPID != null && StraighteningPID.isEnabled()) {
 			StraighteningPID.disable();
@@ -99,12 +92,10 @@ public class DriveMotors extends Subsystem {
 	}
 
 	public void startAutoMode() {
-		disableSafety();
+		safety.disableAll();
 		// set setpoint
 		drive.free();
-		history.clear();
-		history.resetCount();
-		drivingFromHistory = false;
+		history.abort();
 		encoders.setPIDSourceType(PIDSourceType.kDisplacement);
 		StraighteningPID = new PIDController(0, 0, 0, encoders, drive);
 		StraighteningPID.setOutputRange(-1, 1);
@@ -121,20 +112,17 @@ public class DriveMotors extends Subsystem {
 	}
 
 	public void startTeleopMode() {
-		enableSaftey();
+		safety.enableAll();
 	}
 
 	/*
-	 * 
 	 * methods for driving in Teleop
 	 */
 
 	public void driveWithJoystick(boolean squared, boolean compensate) {
 		double forwardModifier = 1 - Math.abs(Robot.joystick.getY());
 		double sensitivity = (-Robot.joystick.getRawAxis(3) + 1) / 2;
-		if (disableMotors) {
-			sensitivity = 0;
-		}
+
 		left = (forwardModifier * Robot.joystick.getX() - Robot.joystick.getY()) * sensitivity;
 		right = (-forwardModifier * Robot.joystick.getX() - Robot.joystick.getY()) * -sensitivity;
 		if (squared) {
@@ -142,7 +130,10 @@ public class DriveMotors extends Subsystem {
 			right = Math.copySign(right * right, right);
 		}
 
-		tankDrive(left, right, false);
+		double[] outputs = { left, right };
+		safety.modify(outputs);
+
+		tankDrive(outputs[0], outputs[1], false);
 		// -----------------------------------------------------------------
 		// TODO: DELETE THIS WHEN DONE
 
@@ -156,34 +147,8 @@ public class DriveMotors extends Subsystem {
 		// ------------------------------------------------------------------
 	}
 
-	public void toggleMotorDisableState() {
-		disableMotors = !disableMotors;
-	}
-
-	public void disableMotors() {
-		disableMotors = true;
-	}
-
-	public void enableMotors() {
-		disableMotors = false;
-	}
-
 	public History getHistory() {
 		return history;
-	}
-
-	public void startDrivingFromHistory() {
-		drivingFromHistory = true;
-	}
-
-	public boolean checkDrivingFromHistory() {
-		return !drivingFromHistory;
-	}
-
-	public void abortDrivingFromHistory() {
-		history.clear();
-		history.resetCount();
-		drivingFromHistory = false;
 	}
 
 	/*
@@ -222,9 +187,6 @@ public class DriveMotors extends Subsystem {
 	public void testDrive(boolean squared, boolean compensate) {// TODO:DELETE THIS WHEN DONE
 		double forwardModifier = 1 - Math.abs(Robot.joystick.getY());
 		double sensitivity = (-Robot.joystick.getRawAxis(3) + 1) / 2;
-		if (disableMotors) {
-			sensitivity = 0;
-		}
 		left = (forwardModifier * Robot.joystick.getX() - Robot.joystick.getY()) * sensitivity;
 		right = (-forwardModifier * Robot.joystick.getX() - Robot.joystick.getY()) * -sensitivity;
 		if (squared) {
@@ -241,7 +203,9 @@ public class DriveMotors extends Subsystem {
 			} catch (NullPointerException e) {
 				System.out.println("Straightening PIDController not initialized");
 			}
-			drive.tankDrive(left, right, false);
+			double[] outputs = {left, right};
+			safety.modify(outputs);
+			drive.tankDrive(outputs[0], outputs[1], false);
 		}
 	}
 
