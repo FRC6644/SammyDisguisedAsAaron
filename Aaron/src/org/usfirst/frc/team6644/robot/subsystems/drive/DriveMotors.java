@@ -1,6 +1,7 @@
 package org.usfirst.frc.team6644.robot.subsystems.drive;
 
 import edu.wpi.first.wpilibj.command.Subsystem;
+import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.PIDController;
@@ -21,7 +22,8 @@ public class DriveMotors extends Subsystem {
 
 	// Drivebase stuff
 	private static DriveMotors instance;
-	private static DifferentialDrivePID drive;
+	private static DifferentialDrive drive;
+	// private statc DifferentailDrivePID drive;
 
 	protected double left = 0;
 	protected double right = 0;
@@ -48,9 +50,16 @@ public class DriveMotors extends Subsystem {
 
 	private DriveMotors() {
 		// create a DifferentialDrive
-		drive = new DifferentialDrivePID(new Spark(RobotPorts.LEFT_DRIVE_PWM_SPLIT.get()),
-				new Spark(RobotPorts.RIGHT_DRIVE_PWM_SPLIT.get()), true);
+		// drive = new DifferentialDrivePID(new
+		// Spark(RobotPorts.LEFT_DRIVE_PWM_SPLIT.get()), new
+		// Spark(RobotPorts.RIGHT_DRIVE_PWM_SPLIT.get()), true);
+		Spark leftMotor = new Spark(RobotPorts.LEFT_DRIVE_PWM_SPLIT.get());
+		leftMotor.setInverted(false);
+		Spark rightMotor = new Spark(RobotPorts.RIGHT_DRIVE_PWM_SPLIT.get());
+		rightMotor.setInverted(false);
+		drive = new DifferentialDrive(leftMotor, rightMotor);
 		safety.registerMotor(drive);
+		safety.setTimeout(0.3);
 
 		// do encoder stuff
 		encoders = new DriveEncodersPID(new Encoder(RobotPorts.LEFT_ENCODER_A.get(), RobotPorts.LEFT_ENCODER_B.get()),
@@ -97,9 +106,10 @@ public class DriveMotors extends Subsystem {
 		drive.free();
 		history.abort();
 		encoders.setPIDSourceType(PIDSourceType.kDisplacement);
-		StraighteningPID = new PIDController(0, 0, 0, encoders, drive);
-		StraighteningPID.setOutputRange(-1, 1);
-		StraighteningPID.enable();
+		/*
+		 * StraighteningPID = new PIDController(0, 0, 0, encoders, drive);
+		 * StraighteningPID.setOutputRange(-1, 1); StraighteningPID.enable();
+		 */
 	}
 
 	public void stopAutoMode() {
@@ -203,7 +213,7 @@ public class DriveMotors extends Subsystem {
 			} catch (NullPointerException e) {
 				System.out.println("Straightening PIDController not initialized");
 			}
-			double[] outputs = {left, right};
+			double[] outputs = { left, right };
 			safety.modify(outputs);
 			drive.tankDrive(outputs[0], outputs[1], false);
 		}

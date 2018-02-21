@@ -86,7 +86,7 @@ public class Safety {
 	 * @return
 	 */
 	public void modify(double[] outputs) {
-		if (outputsEnabled) {
+		if (!outputsEnabled) {
 			for (int i = 0; i != outputs.length; i++) {
 				outputs[i] = 0;
 			}

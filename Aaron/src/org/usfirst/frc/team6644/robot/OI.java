@@ -19,7 +19,7 @@ public class OI {
 	public static JoystickButton elevatorUp = new JoystickButton(Robot.joystick, 10);
 	public static JoystickButton elevatorDown = new JoystickButton(Robot.joystick, 9);
 	public static JoystickButton grabberIn = new JoystickButton(Robot.joystick, 1);
-	public static JoystickButton grabberOut = new JoystickButton(Robot.joystick, 7);
+	public static JoystickButton grabberOut = new JoystickButton(Robot.joystick, 2);
 	//public static JoystickButton driveHistory = new JoystickButton(Robot.joystick, 12);
 
 	public OI() {

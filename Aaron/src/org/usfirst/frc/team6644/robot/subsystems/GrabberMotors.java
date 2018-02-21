@@ -25,8 +25,11 @@ public class GrabberMotors extends Subsystem {
 	}
 
 	private GrabberMotors() {
-		grabber = new SpeedControllerGroup(new Spark(RobotPorts.FORCE_SENSOR_LEFT.get()),
-				new Spark(RobotPorts.FORCE_SENSOR_RIGHT.get()));
+		Spark left = new Spark(RobotPorts.LEFT_GRABBER_MOTOR.get());
+		left.setInverted(false);
+		Spark right = new Spark(RobotPorts.RIGHT_GRABBER_MOTOR.get());
+		right.setInverted(true);
+		grabber = new SpeedControllerGroup(left, right);
 	}
 
 	public void setSpeed(double speed) {

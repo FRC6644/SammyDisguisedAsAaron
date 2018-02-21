@@ -121,6 +121,7 @@ public class Robot extends IterativeRobot {
 		Scheduler.getInstance().add(new UpdateSmartDashboard());
 		Scheduler.getInstance().add(new DriveWithJoystick());
 		Scheduler.getInstance().add(new ControlElevator());
+		Scheduler.getInstance().add(new ControlGrabber());
 	}
 
 	/**

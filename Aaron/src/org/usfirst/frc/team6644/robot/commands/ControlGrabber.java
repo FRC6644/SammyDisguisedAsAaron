@@ -6,9 +6,10 @@ import org.usfirst.frc.team6644.robot.subsystems.GrabberMotors;
 import edu.wpi.first.wpilibj.command.Command;
 
 public class ControlGrabber extends Command {
+	private double speed = 0;
 
 	public ControlGrabber() {
-
+		speed = .3;
 	}
 
 	public void initialize() {
@@ -17,9 +18,9 @@ public class ControlGrabber extends Command {
 
 	public void execute() {
 		if (OI.grabberIn.get()) {
-			GrabberMotors.getInstance().setSpeed(1);
+			GrabberMotors.getInstance().setSpeed(speed);
 		} else if (OI.grabberOut.get()) {
-			GrabberMotors.getInstance().setSpeed(-1);
+			GrabberMotors.getInstance().setSpeed(-speed);
 		} else {
 			GrabberMotors.getInstance().setSpeed(0);
 		}

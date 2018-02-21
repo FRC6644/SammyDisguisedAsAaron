@@ -24,6 +24,7 @@ public class ElevatorMotor extends Subsystem {
 
 	private ElevatorMotor() {
 		elevatorController = new Spark(RobotPorts.ELEVATOR_MOTOR.get());
+		elevatorController.setInverted(true);
 	}
 
 	public void setElevatorSpeed(double speed) {
