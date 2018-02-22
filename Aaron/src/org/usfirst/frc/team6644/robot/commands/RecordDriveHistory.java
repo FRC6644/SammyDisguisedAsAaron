@@ -1,6 +1,8 @@
 package org.usfirst.frc.team6644.robot.commands;
 
-import org.usfirst.frc.team6644.robot.subsystems.DriveMotors;
+import java.io.IOException;
+
+import org.usfirst.frc.team6644.robot.subsystems.drive.DriveMotors;
 
 import edu.wpi.first.wpilibj.buttons.JoystickButton;
 import edu.wpi.first.wpilibj.command.Command;
@@ -18,12 +20,12 @@ public class RecordDriveHistory extends Command {
 
 	// Called just before this Command runs the first time
 	protected void initialize() {
-		DriveMotors.getInstance().startHistory();
+		DriveMotors.getInstance().getHistory().start();
 	}
 
 	// Called repeatedly when this Command is scheduled to run
 	protected void execute() {
-		DriveMotors.getInstance().updateHistory();
+		DriveMotors.getInstance().getHistory().append(DriveMotors.getInstance().getDriveOutputs());
 	}
 
 	// Make this return true when this Command no longer needs to run execute()
@@ -33,7 +35,12 @@ public class RecordDriveHistory extends Command {
 
 	// Called once after isFinished returns true
 	protected void end() {
-		DriveMotors.getInstance().endHistory(0);
+		try {
+			DriveMotors.getInstance().getHistory().save(0);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		// TODO: Check to make sure end() isn't called repeatedly by commands called by
 		// JoystickButton.whileHeld(Commad c) after scheduler loops around. That would
 		// really mess this up badly.

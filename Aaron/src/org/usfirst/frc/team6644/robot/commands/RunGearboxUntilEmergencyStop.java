@@ -1,7 +1,8 @@
 package org.usfirst.frc.team6644.robot.commands;
 
+import org.usfirst.frc.team6644.robot.subsystems.drive.DriveMotors;
+
 import edu.wpi.first.wpilibj.command.Command;
-import org.usfirst.frc.team6644.robot.subsystems.DriveMotors;
 
 /**
  *
@@ -14,7 +15,7 @@ public class RunGearboxUntilEmergencyStop extends Command {
 
     // Called just before this Command runs the first time
     protected void initialize() {
-    	DriveMotors.getInstance().disableSafety();
+    	DriveMotors.getInstance().startAutoMode();
     }
 
     // Called repeatedly when this Command is scheduled to run

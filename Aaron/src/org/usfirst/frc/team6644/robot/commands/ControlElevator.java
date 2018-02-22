@@ -10,11 +10,10 @@ import edu.wpi.first.wpilibj.command.Command;
  *
  */
 public class ControlElevator extends Command {
-
+	public double speed = 0;
 	public ControlElevator() {
-		// Use requires() here to declare subsystem dependencies
-		// eg. requires(chassis);
 		requires(ElevatorMotor.getInstance());
+		speed = .6;
 	}
 
 	// Called just before this Command runs the first time
@@ -23,10 +22,16 @@ public class ControlElevator extends Command {
 
 	// Called repeatedly when this Command is scheduled to run
 	protected void execute() {
-		if(OI.elevator.get()) {
-			System.out.println("RUNNING");
-			ElevatorMotor.getInstance().setElevatorSpeed(1);
-		}else {
+		int POV = Robot.joystick.getPOV();
+		boolean goUp = POV == 0;// OI.elevatorUp.get();
+		boolean goDown = POV == 180;// OI.elevatorDown.get();
+		
+		
+		if (goUp) {
+			ElevatorMotor.getInstance().setElevatorSpeed(speed);
+		} else if (goDown) {
+			ElevatorMotor.getInstance().setElevatorSpeed(-speed/2);
+		} else {
 			ElevatorMotor.getInstance().setElevatorSpeed(0);
 		}
 	}

@@ -14,10 +14,10 @@ public class GrabberMotors extends Subsystem {
 
 	// Put methods for controlling this subsystem
 	// here. Call these from Commands.
-	private GrabberMotors instance;
+	private static GrabberMotors instance;
 	private SpeedControllerGroup grabber;
 
-	public GrabberMotors getInstance() {
+	public static GrabberMotors getInstance() {
 		if (instance == null) {
 			instance = new GrabberMotors();
 		}
@@ -25,8 +25,15 @@ public class GrabberMotors extends Subsystem {
 	}
 
 	private GrabberMotors() {
-		grabber = new SpeedControllerGroup(new Spark(RobotPorts.FORCE_SENSOR_LEFT.get()),
-				new Spark(RobotPorts.FORCE_SENSOR_RIGHT.get()));
+		Spark left = new Spark(RobotPorts.LEFT_GRABBER_MOTOR.get());
+		left.setInverted(false);
+		Spark right = new Spark(RobotPorts.RIGHT_GRABBER_MOTOR.get());
+		right.setInverted(true);
+		grabber = new SpeedControllerGroup(left, right);
+	}
+
+	public void setSpeed(double speed) {
+		grabber.set(speed);
 	}
 
 	public void initDefaultCommand() {

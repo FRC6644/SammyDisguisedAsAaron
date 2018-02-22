@@ -10,8 +10,8 @@ import edu.wpi.first.wpilibj.command.Subsystem;
  */
 public class ElevatorMotor extends Subsystem {
 
-    // Put methods for controlling this subsystem
-    // here. Call these from Commands.
+	// Put methods for controlling this subsystem
+	// here. Call these from Commands.
 	private static ElevatorMotor instance;
 	private static Spark elevatorController;
 
@@ -21,22 +21,22 @@ public class ElevatorMotor extends Subsystem {
 		}
 		return instance;
 	}
-	
+
 	private ElevatorMotor() {
-		elevatorController=new Spark(RobotPorts.ELEVATOR_MOTOR.get());
+		elevatorController = new Spark(RobotPorts.ELEVATOR_MOTOR.get());
+		elevatorController.setInverted(true);
 	}
-	
-	public void setElevatorSpeed(double speed){
+
+	public void setElevatorSpeed(double speed) {
 		elevatorController.set(speed);
 	}
-	
+
 	public void stop() {
 		elevatorController.stopMotor();
 	}
 
-    public void initDefaultCommand() {
-        // Set the default command for a subsystem here.
-        //setDefaultCommand(new MySpecialCommand());
-    }
+	public void initDefaultCommand() {
+		// Set the default command for a subsystem here.
+		// setDefaultCommand(new MySpecialCommand());
+	}
 }
-
