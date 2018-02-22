@@ -206,12 +206,8 @@ public class DriveMotors extends Subsystem {
 		if (compensate) {
 			StraighteningPID.enable();
 		} else {
-			try {
-				if (StraighteningPID.isEnabled()) {
-					StraighteningPID.disable();
-				}
-			} catch (NullPointerException e) {
-				System.out.println("Straightening PIDController not initialized");
+			if (StraighteningPID != null && StraighteningPID.isEnabled()) {
+				StraighteningPID.disable();
 			}
 			double[] outputs = { left, right };
 			safety.modify(outputs);
