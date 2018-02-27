@@ -7,6 +7,7 @@ import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.PIDController;
 import edu.wpi.first.wpilibj.PIDSourceType;
 import edu.wpi.first.wpilibj.Spark;
+import edu.wpi.first.wpilibj.SpeedControllerGroup;
 import edu.wpi.first.wpilibj.buttons.JoystickButton;
 import org.usfirst.frc.team6644.robot.Robot;
 import org.usfirst.frc.team6644.robot.RobotPorts;
@@ -53,11 +54,13 @@ public class DriveMotors extends Subsystem {
 		// drive = new DifferentialDrivePID(new
 		// Spark(RobotPorts.LEFT_DRIVE_PWM_SPLIT.get()), new
 		// Spark(RobotPorts.RIGHT_DRIVE_PWM_SPLIT.get()), true);
-		Spark leftMotor = new Spark(RobotPorts.LEFT_DRIVE_PWM_SPLIT.get());
-		leftMotor.setInverted(false);
-		Spark rightMotor = new Spark(RobotPorts.RIGHT_DRIVE_PWM_SPLIT.get());
-		rightMotor.setInverted(false);
-		drive = new DifferentialDrive(leftMotor, rightMotor);
+		SpeedControllerGroup left = new SpeedControllerGroup(new Spark(RobotPorts.LEFT_DRIVE_PWM_0.get()),
+				new Spark(RobotPorts.LEFT_DRIVE_PWM_1.get()));
+		SpeedControllerGroup right = new SpeedControllerGroup(new Spark(RobotPorts.RIGHT_DRIVE_PWM_0.get()),
+				new Spark(RobotPorts.RIGHT_DRIVE_PWM_1.get()));
+		left.setInverted(false);
+		right.setInverted(false);
+		drive = new DifferentialDrive(left, right);
 		safety.registerMotor(drive);
 		safety.setTimeout(0.3);
 
@@ -130,11 +133,11 @@ public class DriveMotors extends Subsystem {
 	 */
 
 	public void driveWithJoystick(boolean squared, boolean compensate) {
-		double forwardModifier = 1 - Math.abs(Robot.joystick.getY());
+		double forwardModifier = 1 - Math.abs(Robot.joystick.getX());
 		double sensitivity = (-Robot.joystick.getRawAxis(3) + 1) / 2;
 
-		left = (forwardModifier * Robot.joystick.getX() - Robot.joystick.getY()) * sensitivity;
-		right = (-forwardModifier * Robot.joystick.getX() - Robot.joystick.getY()) * -sensitivity;
+		left = (forwardModifier * Robot.joystick.getY() - Robot.joystick.getX()) * -sensitivity;
+		right = (-forwardModifier * Robot.joystick.getY() - Robot.joystick.getX()) * sensitivity;
 		if (squared) {
 			left = Math.copySign(left * left, left);
 			right = Math.copySign(right * right, right);

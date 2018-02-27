@@ -31,7 +31,7 @@ public class Robot extends IterativeRobot {
 
 	// essential subsystems
 	public static PDM pdm;
-	public static PCM pcm;
+	//public static PCM pcm;
 
 	Command autonomousCommand;
 	SendableChooser<Command> chooser = new SendableChooser<>();
@@ -47,7 +47,7 @@ public class Robot extends IterativeRobot {
 
 		joystick = new Joystick(RobotPorts.JOYSTICK.get());
 		pdm = new PDM();
-		pcm = new PCM();
+		//pcm = new PCM();
 
 		oi = new OI();
 
@@ -55,8 +55,8 @@ public class Robot extends IterativeRobot {
 		DriveMotors.getInstance().getHistory().count();
 
 		// pdm.clearStickyFaults();
-		pcm.printCompressorStats();
-		pcm.clearAllPCMStickyFaultsThroughCompressor();
+		//pcm.printCompressorStats();
+		//pcm.clearAllPCMStickyFaultsThroughCompressor();
 
 		// pdm.printPDMStats();
 		// pcm.printCompressorStats();
@@ -66,8 +66,7 @@ public class Robot extends IterativeRobot {
 		// chooser.addObject("My Auto", new MyAutoCommand());
 		SmartDashboard.putData("Auto mode", chooser);
 
-		// starts robot in low gear
-		Scheduler.getInstance().add(new OperateSolenoid(2));
+		
 		Scheduler.getInstance().run();
 		Scheduler.getInstance().removeAll();
 	}
@@ -117,7 +116,7 @@ public class Robot extends IterativeRobot {
 
 	@Override
 	public void teleopInit() {
-		pcm.setSolenoidOff();
+		//pcm.setSolenoidOff();
 		Scheduler.getInstance().add(new UpdateSmartDashboard());
 		Scheduler.getInstance().add(new DriveWithJoystick());
 		Scheduler.getInstance().add(new ControlElevator());
