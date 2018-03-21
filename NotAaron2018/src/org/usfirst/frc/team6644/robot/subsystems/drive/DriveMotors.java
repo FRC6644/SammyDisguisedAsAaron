@@ -7,6 +7,7 @@ import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.PIDController;
 import edu.wpi.first.wpilibj.PIDSourceType;
 import edu.wpi.first.wpilibj.Spark;
+import edu.wpi.first.wpilibj.SpeedControllerGroup;
 import edu.wpi.first.wpilibj.buttons.JoystickButton;
 import org.usfirst.frc.team6644.robot.Robot;
 import org.usfirst.frc.team6644.robot.RobotPorts;
@@ -53,21 +54,21 @@ public class DriveMotors extends Subsystem {
 		// drive = new DifferentialDrivePID(new
 		// Spark(RobotPorts.LEFT_DRIVE_PWM_SPLIT.get()), new
 		// Spark(RobotPorts.RIGHT_DRIVE_PWM_SPLIT.get()), true);
-		Spark leftMotor = new Spark(RobotPorts.LEFT_DRIVE_PWM_SPLIT.get());
-		leftMotor.setInverted(false);
-		Spark rightMotor = new Spark(RobotPorts.RIGHT_DRIVE_PWM_SPLIT.get());
-		rightMotor.setInverted(false);
-		drive = new DifferentialDrive(leftMotor, rightMotor);
+		Spark left = new Spark(RobotPorts.LEFT_DRIVE_PWM_SPLIT.get());
+		Spark right = new Spark(RobotPorts.RIGHT_DRIVE_PWM_SPLIT.get());
+		left.setInverted(false);
+		right.setInverted(false);
+		drive = new DifferentialDrive(left, right);
 		safety.registerMotor(drive);
 		safety.setTimeout(0.3);
 
 		// do encoder stuff
-		encoders = new DriveEncodersPID(new Encoder(RobotPorts.LEFT_ENCODER_A.get(), RobotPorts.LEFT_ENCODER_B.get()),
-				new Encoder(RobotPorts.RIGHT_ENCODER_A.get(), RobotPorts.RIGHT_ENCODER_B.get()), true, true);
-		encoders.encoderReset();
-		encoders.setReverseDirection(true, false);
-		encoders.encoderSetSamplesToAverage(4);
-		encoders.encoderSetDistancePerPulse(0.0020454076); // this is in ft/pulse
+		//encoders = new DriveEncodersPID(new Encoder(RobotPorts.LEFT_ENCODER_A.get(), RobotPorts.LEFT_ENCODER_B.get()),
+			//	new Encoder(RobotPorts.RIGHT_ENCODER_A.get(), RobotPorts.RIGHT_ENCODER_B.get()), true, true);
+		//encoders.encoderReset();
+		//encoders.setReverseDirection(true, false);
+		//encoders.encoderSetSamplesToAverage(4);
+		//encoders.encoderSetDistancePerPulse(0.0130899694); // this is in ft/pulse
 	}
 
 	public DriveEncodersPID getEncoders() {
@@ -87,9 +88,9 @@ public class DriveMotors extends Subsystem {
 	}
 
 	public void tankDrive(double left, double right, boolean squaredInputs) {
-		double[] outputs = { left, right };
+		double[] outputs = { -left, -right };
 		safety.modify(outputs);
-		drive.tankDrive(outputs[0], outputs[1], squaredInputs);
+		drive.tankDrive(-outputs[0], -outputs[1], false);
 	}
 
 	public void stop() {
@@ -130,14 +131,14 @@ public class DriveMotors extends Subsystem {
 	 */
 
 	public void driveWithJoystick(boolean squared, boolean compensate) {
-		double forwardModifier = 1 - Math.abs(Robot.joystick.getY());
+		double forwardModifier = 1 - Math.abs(Robot.joystick.getX());
 		double sensitivity = (-Robot.joystick.getRawAxis(3) + 1) / 2;
 
-		left = (forwardModifier * Robot.joystick.getX() - Robot.joystick.getY()) * sensitivity;
-		right = (-forwardModifier * Robot.joystick.getX() - Robot.joystick.getY()) * -sensitivity;
+		left = (forwardModifier * Robot.joystick.getY() - Robot.joystick.getX()) * -sensitivity;
+		right = (-forwardModifier * Robot.joystick.getY() - Robot.joystick.getX()) * sensitivity;
 		if (squared) {
-			left = Math.copySign(left * left, left);
-			right = Math.copySign(right * right, right);
+			//left = Math.copySign(left * left, left);
+			//right = Math.copySign(right * right, right);
 		}
 
 		double[] outputs = { left, right };
@@ -148,11 +149,11 @@ public class DriveMotors extends Subsystem {
 		// TODO: DELETE THIS WHEN DONE
 
 		if (!pressed) {
-			calculateScale = searchForScale.get();
+		//	calculateScale = searchForScale.get();
 		}
 
 		if (calculateScale) {
-			findScaleFactor();
+			//findScaleFactor();
 		}
 		// ------------------------------------------------------------------
 	}
@@ -214,7 +215,21 @@ public class DriveMotors extends Subsystem {
 			drive.tankDrive(outputs[0], outputs[1], false);
 		}
 	}
-
+	public void straighDrive(double leftSpeed, double rightSpeed) {
+		if(leftSpeed > .5) {
+		if(encoders.getEncoder()[0].get() > encoders.getEncoder()[1].get() )
+			leftSpeed *= encoders.getEncoder()[1].get()/encoders.getEncoder()[0].get();
+		if(encoders.getEncoder()[1].get() > encoders.getEncoder()[0].get() )
+			leftSpeed *= encoders.getEncoder()[0].get()/encoders.getEncoder()[1].get();
+		}
+		else if(leftSpeed < .5) {
+			if(encoders.getEncoder()[0].get() > encoders.getEncoder()[1].get() )
+				leftSpeed *= encoders.getEncoder()[0].get()/encoders.getEncoder()[1].get();
+			if(encoders.getEncoder()[1].get() > encoders.getEncoder()[0].get() )
+				leftSpeed *= encoders.getEncoder()[1].get()/encoders.getEncoder()[0].get();
+			}
+		drive.tankDrive(leftSpeed, rightSpeed);
+	}
 	public void findScaleFactor() {
 		double[] rateSamples = new double[2];
 		double[] driveInputs = new double[2];

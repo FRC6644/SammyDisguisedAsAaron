@@ -1,49 +1,39 @@
 package org.usfirst.frc.team6644.robot.commands;
 
+import org.usfirst.frc.team6644.robot.OI;
 import org.usfirst.frc.team6644.robot.Robot;
+import org.usfirst.frc.team6644.robot.subsystems.drive.DriveMotors;
 
 import edu.wpi.first.wpilibj.command.Command;
 
 /**
  *
  */
-public class OperateSolenoid extends Command {
-	private int mode = 0;
+public class DriveWithJoystick extends Command {
 
-	public OperateSolenoid(int mode) {
-		// Use requires() here to declare subsystem dependencies
-		// eg. requires(chassis);
-		this.mode = mode;
-		requires(Robot.pcm);
+	public DriveWithJoystick() {
+		requires(DriveMotors.getInstance());
 	}
 
 	// Called just before this Command runs the first time
 	protected void initialize() {
+		DriveMotors.getInstance().startTeleopMode();
 	}
 
 	// Called repeatedly when this Command is scheduled to run
 	protected void execute() {
-		
-		switch (mode) {
-		case 0:
-			Robot.pcm.setSolenoidForward();
-			break;
-		case 1:
-			Robot.pcm.setSolenoidOff();
-			break;
-		case 2:
-			Robot.pcm.setSolenoidReverse();
-			break;
-		}
+		DriveMotors.getInstance().driveWithJoystick(false, false);
+		//DriveMotors.getInstance().arcadeDrive(Robot.joystick);
 	}
 
 	// Make this return true when this Command no longer needs to run execute()
 	protected boolean isFinished() {
-		return true;
+		return false;
 	}
 
 	// Called once after isFinished returns true
 	protected void end() {
+		DriveMotors.getInstance().stop();
 	}
 
 	// Called when another command which requires one or more of the same
