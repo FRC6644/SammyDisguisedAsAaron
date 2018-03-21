@@ -13,7 +13,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
  *
  */
 public class UpdateSmartDashboard extends Command {
-	double[] encoderValues;
+	double[] encoderValues = new double[2];
 	double[] driveOutputs;
 	JoystickButton linearDrive;
 	JoystickButton compensate;
@@ -35,13 +35,15 @@ public class UpdateSmartDashboard extends Command {
 		if (DriverStation.getInstance().isDisabled()) {
 			DriveMotors.getInstance().testDrive(linearDrive.get(), compensate.get());
 		}
-
-		encoderValues = DriveMotors.getInstance().getEncoders().encoderDistance();
+		
+		
+		encoderValues = Robot.encoders.getDistance();
+		double encoderRates[] = Robot.encoders.getRate();
 		driveOutputs = DriveMotors.getInstance().getDriveOutputs();
 		SmartDashboard.putNumber("Encoder left value: ", encoderValues[0]);
 		SmartDashboard.putNumber("Encoder right value: ", encoderValues[1]);
-		SmartDashboard.putNumber("Drive left value: ", driveOutputs[0]);
-		SmartDashboard.putNumber("Drive right value: ", driveOutputs[1]);
+		SmartDashboard.putNumber("Encoder left rate: ", encoderRates[0]);
+		SmartDashboard.putNumber("Encoder right rate: ", encoderRates[1]);
 		SmartDashboard.putBoolean("linearDrive: ", linearDrive.get());
 		SmartDashboard.putBoolean("compensate: ", compensate.get());
 

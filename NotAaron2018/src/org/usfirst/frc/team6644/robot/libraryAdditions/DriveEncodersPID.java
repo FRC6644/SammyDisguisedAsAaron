@@ -150,10 +150,7 @@ public class DriveEncodersPID implements PIDSource {
 	}
 
 	public double[] encoderDistance() {
-		double[] thing = new double[2];
-		thing[0] = left.getDistance();
-		thing[1] = right.getDistance();
-		return thing;
+		return new double[] {left.getDistance(), right.getDistance()};
 	}
 
 	public double[] encoderRate() {
@@ -177,6 +174,10 @@ public class DriveEncodersPID implements PIDSource {
 	public void setReverseDirection(boolean left, boolean right) {
 		this.left.setReverseDirection(left);
 		this.right.setReverseDirection(right);
+	}
+	public Encoder[] getEncoder() {
+		Encoder[] encodersList = {left, right};
+		return encodersList;
 	}
 
 }

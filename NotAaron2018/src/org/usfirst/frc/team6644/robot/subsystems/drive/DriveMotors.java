@@ -54,10 +54,8 @@ public class DriveMotors extends Subsystem {
 		// drive = new DifferentialDrivePID(new
 		// Spark(RobotPorts.LEFT_DRIVE_PWM_SPLIT.get()), new
 		// Spark(RobotPorts.RIGHT_DRIVE_PWM_SPLIT.get()), true);
-		SpeedControllerGroup left = new SpeedControllerGroup(new Spark(RobotPorts.LEFT_DRIVE_PWM_0.get()),
-				new Spark(RobotPorts.LEFT_DRIVE_PWM_1.get()));
-		SpeedControllerGroup right = new SpeedControllerGroup(new Spark(RobotPorts.RIGHT_DRIVE_PWM_0.get()),
-				new Spark(RobotPorts.RIGHT_DRIVE_PWM_1.get()));
+		Spark left = new Spark(RobotPorts.LEFT_DRIVE_PWM_SPLIT.get());
+		Spark right = new Spark(RobotPorts.RIGHT_DRIVE_PWM_SPLIT.get());
 		left.setInverted(false);
 		right.setInverted(false);
 		drive = new DifferentialDrive(left, right);
@@ -65,12 +63,12 @@ public class DriveMotors extends Subsystem {
 		safety.setTimeout(0.3);
 
 		// do encoder stuff
-		encoders = new DriveEncodersPID(new Encoder(RobotPorts.LEFT_ENCODER_A.get(), RobotPorts.LEFT_ENCODER_B.get()),
-				new Encoder(RobotPorts.RIGHT_ENCODER_A.get(), RobotPorts.RIGHT_ENCODER_B.get()), true, true);
-		encoders.encoderReset();
-		encoders.setReverseDirection(true, false);
-		encoders.encoderSetSamplesToAverage(4);
-		encoders.encoderSetDistancePerPulse(0.0020454076); // this is in ft/pulse
+		//encoders = new DriveEncodersPID(new Encoder(RobotPorts.LEFT_ENCODER_A.get(), RobotPorts.LEFT_ENCODER_B.get()),
+			//	new Encoder(RobotPorts.RIGHT_ENCODER_A.get(), RobotPorts.RIGHT_ENCODER_B.get()), true, true);
+		//encoders.encoderReset();
+		//encoders.setReverseDirection(true, false);
+		//encoders.encoderSetSamplesToAverage(4);
+		//encoders.encoderSetDistancePerPulse(0.0130899694); // this is in ft/pulse
 	}
 
 	public DriveEncodersPID getEncoders() {
@@ -90,9 +88,9 @@ public class DriveMotors extends Subsystem {
 	}
 
 	public void tankDrive(double left, double right, boolean squaredInputs) {
-		double[] outputs = { left, right };
+		double[] outputs = { -left, -right };
 		safety.modify(outputs);
-		drive.tankDrive(outputs[0], outputs[1], squaredInputs);
+		drive.tankDrive(-outputs[0], -outputs[1], false);
 	}
 
 	public void stop() {
@@ -139,8 +137,8 @@ public class DriveMotors extends Subsystem {
 		left = (forwardModifier * Robot.joystick.getY() - Robot.joystick.getX()) * -sensitivity;
 		right = (-forwardModifier * Robot.joystick.getY() - Robot.joystick.getX()) * sensitivity;
 		if (squared) {
-			left = Math.copySign(left * left, left);
-			right = Math.copySign(right * right, right);
+			//left = Math.copySign(left * left, left);
+			//right = Math.copySign(right * right, right);
 		}
 
 		double[] outputs = { left, right };
@@ -151,11 +149,11 @@ public class DriveMotors extends Subsystem {
 		// TODO: DELETE THIS WHEN DONE
 
 		if (!pressed) {
-			calculateScale = searchForScale.get();
+		//	calculateScale = searchForScale.get();
 		}
 
 		if (calculateScale) {
-			findScaleFactor();
+			//findScaleFactor();
 		}
 		// ------------------------------------------------------------------
 	}
@@ -217,7 +215,21 @@ public class DriveMotors extends Subsystem {
 			drive.tankDrive(outputs[0], outputs[1], false);
 		}
 	}
-
+	public void straighDrive(double leftSpeed, double rightSpeed) {
+		if(leftSpeed > .5) {
+		if(encoders.getEncoder()[0].get() > encoders.getEncoder()[1].get() )
+			leftSpeed *= encoders.getEncoder()[1].get()/encoders.getEncoder()[0].get();
+		if(encoders.getEncoder()[1].get() > encoders.getEncoder()[0].get() )
+			leftSpeed *= encoders.getEncoder()[0].get()/encoders.getEncoder()[1].get();
+		}
+		else if(leftSpeed < .5) {
+			if(encoders.getEncoder()[0].get() > encoders.getEncoder()[1].get() )
+				leftSpeed *= encoders.getEncoder()[0].get()/encoders.getEncoder()[1].get();
+			if(encoders.getEncoder()[1].get() > encoders.getEncoder()[0].get() )
+				leftSpeed *= encoders.getEncoder()[1].get()/encoders.getEncoder()[0].get();
+			}
+		drive.tankDrive(leftSpeed, rightSpeed);
+	}
 	public void findScaleFactor() {
 		double[] rateSamples = new double[2];
 		double[] driveInputs = new double[2];

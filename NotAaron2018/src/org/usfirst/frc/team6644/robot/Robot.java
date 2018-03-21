@@ -1,6 +1,9 @@
 
 package org.usfirst.frc.team6644.robot;
 
+import edu.wpi.cscore.UsbCamera;
+import edu.wpi.cscore.UsbCameraInfo;
+import edu.wpi.first.wpilibj.CameraServer;
 import edu.wpi.first.wpilibj.IterativeRobot;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.command.Command;
@@ -29,9 +32,12 @@ public class Robot extends IterativeRobot {
 	// Robot things
 	public static Joystick joystick;
 
+	
+	public UsbCamera cam;
 	// essential subsystems
 	public static PDM pdm;
 	//public static PCM pcm;
+	public static Encoders encoders;
 
 	Command autonomousCommand;
 	SendableChooser<Command> chooser = new SendableChooser<>();
@@ -42,9 +48,10 @@ public class Robot extends IterativeRobot {
 	 */
 	@Override
 	public void robotInit() {
+		cam = CameraServer.getInstance().startAutomaticCapture();
 		LiveWindow.disableAllTelemetry(); // this fixes the CAN timeout error from the
 											// PowerDistributionMudule.getTotalCurrent()
-
+		encoders = new Encoders(RobotPorts.LEFT_ENCODER_A.get(), RobotPorts.LEFT_ENCODER_B.get(), RobotPorts.RIGHT_ENCODER_A.get(), RobotPorts.RIGHT_ENCODER_B.get());
 		joystick = new Joystick(RobotPorts.JOYSTICK.get());
 		pdm = new PDM();
 		//pcm = new PCM();
@@ -100,7 +107,8 @@ public class Robot extends IterativeRobot {
 	 */
 	@Override
 	public void autonomousInit() {
-		Scheduler.getInstance().add(new AutonomousTankDrive());
+		Scheduler.getInstance().add(new DriveStraight(.3));
+
 		// Scheduler.getInstance().add(new UpdateSmartDashboard());
 		// DriveMotors.getInstance().encoderReset();
 	}
@@ -117,6 +125,7 @@ public class Robot extends IterativeRobot {
 	@Override
 	public void teleopInit() {
 		//pcm.setSolenoidOff();
+		encoders.reset();
 		Scheduler.getInstance().add(new UpdateSmartDashboard());
 		Scheduler.getInstance().add(new DriveWithJoystick());
 		Scheduler.getInstance().add(new ControlElevator());

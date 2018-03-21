@@ -22,7 +22,7 @@ public class DriveWithJoystick extends Command {
 
 	// Called repeatedly when this Command is scheduled to run
 	protected void execute() {
-		DriveMotors.getInstance().driveWithJoystick(true, false);
+		DriveMotors.getInstance().driveWithJoystick(false, false);
 		//DriveMotors.getInstance().arcadeDrive(Robot.joystick);
 	}
 
