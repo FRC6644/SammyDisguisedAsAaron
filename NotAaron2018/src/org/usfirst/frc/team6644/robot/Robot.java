@@ -108,6 +108,7 @@ public class Robot extends IterativeRobot {
 	@Override
 	public void autonomousInit() {
 		Scheduler.getInstance().add(new DriveStraight(.3));
+		Scheduler.getInstance().add(new ReleaseGrabber());
 
 		// Scheduler.getInstance().add(new UpdateSmartDashboard());
 		// DriveMotors.getInstance().encoderReset();
